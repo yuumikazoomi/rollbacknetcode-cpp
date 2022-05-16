@@ -18,7 +18,7 @@ Game::Game(bool host) : state(host),level(&state){
             
             auto t = [this,packet](NITransferSize size){
                 if(size == sizeof(NIRelayPacket)){
-
+                    
                 }else{
                 }
                 
@@ -81,44 +81,44 @@ void Game::update(){
         handlepacket(packet,size);
     };
     net.poll(netcallback);
+    uint16_t direction = 0;
+    bool directionchanged = false;
+    SDL_Event event;
     
-    if(processing){
-        //check input
-        SDL_Event event;
-        bool directionchanged = false;
-        while (SDL_PollEvent(&event)){
-            switch (event.type){
-                case SDL_QUIT:
-                    exit(1);
-                    //quit
-                    break;
-                case SDLK_RIGHT:{
-                    directionchanged = true;
-                    state.updatedirection(kDirectionRight);
-                }
-                    break;
-                case SDLK_DOWN:{
-                    directionchanged = true;
-                    state.updatedirection(kDirectionDown);
-                }
-                    break;
-                case SDLK_LEFT:{
-                    directionchanged = true;
-                    state.updatedirection(kDirectionLeft);
-                }
-                    break;
-                case SDLK_UP:{
-                    directionchanged = true;
-                    state.updatedirection(kDirectionUp);
-                }
-                    break;
-                default:
-                    break;
+    while (SDL_PollEvent(&event)){
+        switch (event.type){
+            case SDL_QUIT:
+                exit(1);
+                //quit
+                break;
+            case SDLK_RIGHT:{
+                directionchanged = true;
+                directionchanged = kDirectionRight;
             }
+                break;
+            case SDLK_DOWN:{
+                directionchanged = true;
+                direction = kDirectionDown;
+            }
+                break;
+            case SDLK_LEFT:{
+                directionchanged = true;
+                direction = kDirectionLeft;
+            }
+                break;
+            case SDLK_UP:{
+                directionchanged = true;
+                direction = kDirectionUp;
+            }
+                break;
+            default:
+                break;
         }
+    }
+    if(processing){
         //send input to peer
         if(directionchanged){
-            
+            state.updatedirection(direction);
             
             NIRelayPacket packet = {0};
             packet.packettype = kProvidedInput;
@@ -131,8 +131,6 @@ void Game::update(){
             //send the packet
             net.sendpacket(&packet);
         }
-        
-        
         //update
         state.update();
     }
