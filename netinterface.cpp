@@ -9,58 +9,65 @@ NetInterface::NetInterface()
 #endif
     memset(&peeraddress,0,sizeof(NISockAddrIn));
 }
-bool NetInterface::makeblock(){
-#ifdef NETINTERFACE_USING_WINDOWS
-    int timeout = 1000;
-    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
-        destroysocket();
-        return false;
-    }
-#else
-    struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 1000000;
-    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
-        destroysocket();
-        return false;
-    }
-#endif
-}
-bool NetInterface::nonblock(){
-#ifdef NETINTERFACE_USING_WINDOWS
-    int timeout = 1;
-    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
-        destroysocket();
-        return false;
-    }
-#else
-    struct timeval tv;
-    tv.tv_sec = 0;
-    tv.tv_usec = 1000;
-    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
-        destroysocket();
-        return false;
-    }
-#endif
-}
+/*
+ bool NetInterface::makeblock(){
+ #ifdef NETINTERFACE_USING_WINDOWS
+ int timeout = 5000;
+ if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
+ destroysocket();
+ return false;
+ }
+ #else
+ struct timeval tv;
+ tv.tv_sec = 0;
+ tv.tv_usec = 5000000;
+ if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
+ destroysocket();
+ return false;
+ }
+ #endif
+ return true;
+ }
+ bool NetInterface::nonblock(){
+ #ifdef NETINTERFACE_USING_WINDOWS
+ int timeout = 1;
+ if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
+ destroysocket();
+ return false;
+ }
+ #else
+ struct timeval tv;
+ tv.tv_sec = 0;
+ tv.tv_usec = 1000;
+ if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
+ destroysocket();
+ return false;
+ }
+ #endif
+ return true;
+ }
+ */
 bool NetInterface::makesocket()
 {
     connection = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if(connection<=0){
         return false;
     }
-
+    
     int enable = 1;
     if (setsockopt(connection, SOL_SOCKET, SO_REUSEADDR, (char*)&enable, sizeof(int)) != 0){
         destroysocket();
         return false;
     }
-
-    if(!makeblock()){
-        destroysocket();
-        return false;
-    }
-    
+    /*
+     #ifdef NETINTERFACE_USING_WINDOWS
+     u_long iMode=1;
+     ioctlsocket(connection,FIONBIO,&iMode);
+     #else
+     int flags = fcntl(connection,F_GETFL,0);
+     fcntl(connection, F_SETFL, flags | O_NONBLOCK);
+     #endif
+     */
     return true;
     
 }
@@ -70,11 +77,10 @@ bool NetInterface::makesocketbind(){
     selfaddress.sin_family = AF_INET;
     selfaddress.sin_port = htons(6789);
     selfaddress.sin_addr.s_addr = INADDR_ANY;
-    
     if(!makesocket()){
         return false;
     }
-
+    
     if(bind(connection,(NISockAddr*)&selfaddress,sizeof(NISockAddrIn))!=0){
         destroysocket();
         return false;
@@ -101,15 +107,23 @@ void NetInterface::setremoteaddress(const char* hostname, uint16_t port){
 #endif
     peeraddress.sin_port = htons(port);
 }
-void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback){
+void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)> callback){
     NIRelayPacket packet = {0};
     NISockAddrIn address = {0};
     NISockAddrSize sizeofaddress = sizeof(NISockAddrIn);
-    bool error = false;
-    bool availabledata = false;
+    
+    fd_set  fdread;
+    FD_ZERO(&fdread);
+    FD_SET(connection, &fdread);
+    struct timeval wait = {0};
+    wait.tv_usec = 1000;
+    int ret = select(connection+1,&fdread,NULL,NULL,&wait);
+    if(ret<=0){
+        return;
+    }
+    
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
-    if(size == sizeof(NIRelayPacket)){
-        availabledata = true;
+    if(size>0){
         if(packet.signature == NI_SIGNATURE
            && packet.packettype == kNIHandShake){//simple handshake
             if(host){
@@ -119,23 +133,24 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize,b
                 memcpy(&peeraddress,&address,sizeofaddress);
             }
         }
-    }else if(size <= 0){
+        callback(packet,size);
+    }else{
         if(!iserrornonblock()){
-            error = true;
         }
     }
-    callback(packet,size,availabledata,error);
+    
 }
-void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback){
+void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize)> callback){
     NITransferSize size = sendto(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
     bool error = false;
     if(size <= 0){
         if(!iserrornonblock()){
             error = true;
         }
-    }
-    if(callback!=nullptr){
-        callback(size,error);
+    }else{
+        if(callback!=nullptr){
+            callback(size);
+        }
     }
     
 }
