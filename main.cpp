@@ -21,7 +21,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
-    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
+    SDL_Renderer *renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_PRESENTVSYNC);
     
     bool alive = true;
     
@@ -48,9 +48,13 @@ void update(){
 void draw(SDL_Renderer* renderer){
     SDL_SetRenderDrawColor( renderer, 245, 245, 245, 255 );
     SDL_RenderClear(renderer);
+    
+    
     SDL_Rect r = {50,50,50,50};
     SDL_SetRenderDrawColor( renderer, 255, 161, 0, 255 );
     SDL_RenderFillRect( renderer, &r );
+    
+    
     
     SDL_RenderPresent(renderer);
 }
