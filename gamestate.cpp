@@ -86,10 +86,10 @@ void GameState::update(){
         statestack.pop_front();
     }
 }
-void GameState::rollback(uint16_t direction, uint16_t localframe, uint16_t targetframe)
+void GameState::rollback(uint16_t direction, uint16_t targetframe)
 {
     std::deque<std::shared_ptr<GameStateAbstract> >::iterator it = statestack.end();
-    uint16_t diff = localframe - targetframe;
+    uint16_t diff = framecount - targetframe;
     if (diff > 10){
         //not sure what to do here
     }
@@ -154,6 +154,11 @@ void GameState::rollback(uint16_t direction, uint16_t localframe, uint16_t targe
     }
 }
 
+
+//wrapper for ourself
+void GameState::updatedirection(uint16_t direction){
+    updatedirection(&me,direction,framecount);
+}
 //this function gets called either from the network or our own gamelogic
 //if its called from ourself then e==me
 //else e==apponent
@@ -161,22 +166,25 @@ void GameState::rollback(uint16_t direction, uint16_t localframe, uint16_t targe
 *localframe == our frame
 *targetframe == frame of peer when they hit input
 */
-void GameState::updatedirection(Entity *e, uint16_t direction, uint16_t localframe, uint16_t targetframe){
+void GameState::updatedirection(Entity *e, uint16_t direction,uint16_t targetframe){
 
     //if arriving frame doesn't  match our frame perform rollback
 
     e->updatedirection(direction);
 
-    //we don't need to rollback our own input
+    //only rollback apponent input
     if (e == &apponent){
 
         //used for displaying on the level
+        /*
         lif.input = direction;
         lif.targetframe = targetframe;
-        lif.localframe = localframe;
-
-        if (localframe > targetframe){
-            rollback(direction, localframe, targetframe);
+        lif.localframe = framecount;
+         */
+        
+        
+        if (framecount > targetframe){
+            rollback(direction, targetframe);
             //perform rollback
         }
     }

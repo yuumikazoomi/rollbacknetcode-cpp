@@ -11,5 +11,7 @@ public:
     Game(bool host);
     void update();
     void draw(SDL_Renderer* renderer);
+private:
+    void handlepacket(const NIRelayPacket& ppacket, NITransferSize size);
 };
 #endif

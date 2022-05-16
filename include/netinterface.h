@@ -35,7 +35,7 @@ typedef socklen_t   NISockAddrSize;
 #include <functional>
 #define NI_SIGNATURE 0xDEAD
 enum NIPacketId {
-    kNIHandShake = 1,
+    kNIHandShake = 0xF00D
 };
 typedef struct sockaddr_in  NISockAddrIn;
 typedef struct sockaddr     NISockAddr;

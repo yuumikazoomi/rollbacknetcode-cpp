@@ -6,15 +6,9 @@
 enum InGamePacketId
 {
     kNothing = 0,
-    kWin = 1,
-    kLose = 2,
-    kPause = 3,
-    kResume = 4,
-    kReserved = 5,
-    kMove = 6,
-    kRejection = 7,
-    kSeed = 8,
-    kNoInput = 9,
+    kNoInput = 0,
+    kSeed,
+    kProvidedInput,
 };
 typedef struct SOutOfOrderInputStorage{
     uint16_t input;
@@ -57,10 +51,13 @@ private:
     int timestep;
     
     std::deque<std::shared_ptr<GameStateAbstract> > statestack;
+    
+    uint16_t framecount;
 public:
     GameState(bool ishost);
     void update();
-    void updatedirection(Entity* e, uint16_t direction,uint16_t localframe,uint16_t targetframe);
+    void updatedirection(uint16_t direction);
+    void updatedirection(Entity* e, uint16_t direction,uint16_t targetframe);
     Entity* getself();
     Entity* getapponent();
     uint32_t getrandomseed();
@@ -73,7 +70,9 @@ public:
     void entityupdate(Entity* e);
 
     const GameStateAbstract& getlastsyncstate();
-    void rollback(uint16_t direction,uint16_t localframe, uint16_t targetframe);
+    void rollback(uint16_t direction,uint16_t targetframe);
     uint32_t xorshift32(uint32_t *state);
+    
+    uint16_t getframecount();
 };
 #endif

@@ -32,48 +32,91 @@ Game::Game(bool host) : state(host),level(&state){
     }
     
 }
-
+void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
+    printpacket(packet);
+    switch (packet.packettype) {
+        case kNIHandShake:{
+            //send them our seed
+            uint32_t seed = state.getrandomseed();
+            
+            NIRelayPacket outgoing = {0};
+            outgoing.packettype = kSeed;
+            outgoing.signature = NI_SIGNATURE;
+            outgoing.extra = seed;
+            
+            net.sendpacket(&outgoing);
+        }
+            break;
+        case kSeed:{
+            uint32_t seed = (uint32_t)packet.extra;
+            state.setrandomseed(seed);
+        }
+            break;
+        case kProvidedInput:{
+            /*
+             *      two bytes         two bytes
+             *        frame             input
+             * | - - - - - - - - | - - - - - - - - |
+             */
+            uint16_t frame = getlowtwo(packet.extra);
+            uint16_t input = gethightwo(packet.extra);
+            state.updatedirection(state.getapponent(),input,frame);
+        }
+            break;
+        default:
+            break;
+    }
+}
 void Game::update(){
     //check input
     SDL_Event event;
+    bool directionchanged = false;
     while (SDL_PollEvent(&event)){
         switch (event.type){
             case SDL_QUIT:
                 exit(1);
                 //quit
                 break;
-        }
-    }
-    
-    //check network
-    auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
-        printpacket(packet);
-        switch (packet.packettype) {
-            case kNIHandShake:{
-                //send them our seed
-                uint32_t seed = state.getrandomseed();
-                
-                NIRelayPacket outgoing = {0};
-                outgoing.packettype = kSeed;
-                outgoing.signature = NI_SIGNATURE;
-                outgoing.extra = seed;
-                
-                net.sendpacket(&outgoing);
+            case SDLK_RIGHT:{
+                directionchanged = true;
+                state.updatedirection(kDirectionRight);
             }
                 break;
-            case kSeed:{
-                uint32_t seed = (uint32_t)packet.extra;
-                state.setrandomseed(seed);
+            case SDLK_DOWN:{
+                directionchanged = true;
+                state.updatedirection(kDirectionDown);
+            }
+                break;
+            case SDLK_LEFT:{
+                directionchanged = true;
+                state.updatedirection(kDirectionLeft);
+            }
+                break;
+            case SDLK_UP:{
+                directionchanged = true;
+                state.updatedirection(kDirectionUp);
             }
                 break;
             default:
                 break;
         }
+    }
+    
+    //check network
+    auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
+        handlepacket(packet,size);
     };
     net.poll(netcallback);
     
+    if(directionchanged){
+        //send direction to peer
+    }
+    
+    
     //update
     state.update();
+    
+    
 }
 void Game::draw(SDL_Renderer* renderer){
     level.draw(renderer);
