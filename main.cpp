@@ -24,7 +24,10 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
+    
     SDL_Init(SDL_INIT_VIDEO);
+    
+    
     SDL_Window *window = SDL_CreateWindow(
                                           "An SDL2 window",
                                           SDL_WINDOWPOS_UNDEFINED,
@@ -55,7 +58,6 @@ int main(int argc, char* argv[]) {
         draw(renderer);
     }
     SDL_DestroyWindow(window);
-    
     SDL_Quit();
     return 0;
 }
@@ -71,6 +73,7 @@ void update(){
     netcode->poll(netcallback);
 }
 void draw(SDL_Renderer* renderer){
+
     SDL_SetRenderDrawColor( renderer, 245, 245, 245, 255 );
     SDL_RenderClear(renderer);
     
@@ -78,8 +81,6 @@ void draw(SDL_Renderer* renderer){
     SDL_Rect r = {50,50,50,50};
     SDL_SetRenderDrawColor( renderer, 255, 161, 0, 255 );
     SDL_RenderFillRect( renderer, &r );
-    
-    
     
     SDL_RenderPresent(renderer);
 }
