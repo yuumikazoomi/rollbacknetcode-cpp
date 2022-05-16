@@ -18,7 +18,7 @@ Game::Game(bool host) : state(host),level(&state){
             
             auto t = [this,packet](NITransferSize size){
                 if(size == sizeof(NIRelayPacket)){
-                    printpacket(packet);
+
                 }else{
                 }
                 
@@ -33,7 +33,6 @@ Game::Game(bool host) : state(host),level(&state){
     
 }
 void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
-    printpacket(packet);
     switch (packet.packettype) {
         case kNIHandShake:{
             //send them our seed

@@ -13,7 +13,7 @@ int main(int argc, char* argv[]) {
      *Change this depending on whether you're host or not
      */
 
-    host = false;
+    host = true;
     
     
     g = new Game(host);

@@ -14,9 +14,9 @@ void Stage::draw(SDL_Renderer* renderer){
     uint32_t myscore = state->getself()->getscore();
     uint32_t apponentscore = state->getapponent()->getscore();
 
-    SDL_Rect r = {myposition.x,myposition.y,TEXTUREWIDTH,TEXTUREHEIGHT};
+    SDL_Rect rself = {myposition.x,myposition.y,TEXTUREWIDTH,TEXTUREHEIGHT};
     SDL_SetRenderDrawColor( renderer, 255, 161, 0, 255 );
-    SDL_RenderFillRect( renderer, &r );
+    SDL_RenderFillRect( renderer, &rself );
     
     SDL_RenderPresent(renderer);
 }

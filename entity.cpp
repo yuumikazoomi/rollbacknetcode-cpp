@@ -4,7 +4,7 @@ Entity::Entity(){
     score = 0;
     speed = 7;
     position = (Vector2){0, 0};
-    direction = 1;
+    direction = kDirectionRight;
 }
 uint32_t Entity::getscore(){
     return score;

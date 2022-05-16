@@ -6,8 +6,8 @@ GameState::GameState(bool ishost){
     if (ishost){
         randomseed = std::random_device()();
     }
-    rbound = 0;
-    bbound = 0;
+    rbound = 1080;
+    bbound = 720;
     objective.x = 0;
     objective.y = 0;
     memset(&lif, 0, sizeof(LastInputFrame));
@@ -44,12 +44,14 @@ void GameState::spawnobjective()
 void GameState::entityupdate(Entity *e)
 {
     e->update(timestep);
+    
     Vector2 epos = e->getposition();
+    /*
     if (iscollidingwithobjective(epos)){
         e->incrementscore();
         spawnobjective();
     }
-
+     */
     if (epos.x < 0){
         e->updatedirection(kDirectionRight);
     }
@@ -68,6 +70,8 @@ void GameState::update(){
     entityupdate(&me);
     entityupdate(&apponent);
 
+    
+    /*
     //create a state packet for the frame
     std::shared_ptr<GameStateAbstract> state = std::make_shared<GameStateAbstract>();
     state->apponent.direction = apponent.getdirection();
@@ -85,6 +89,7 @@ void GameState::update(){
     if (statestack.size() > 10){ //max states{
         statestack.pop_front();
     }
+     */
 }
 void GameState::rollback(uint16_t direction, uint16_t targetframe)
 {
