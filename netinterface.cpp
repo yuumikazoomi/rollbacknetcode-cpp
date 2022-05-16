@@ -72,7 +72,6 @@ bool NetInterface::makesocket()
     
 }
 bool NetInterface::makesocketbind(){
-    host = true;
     NISockAddrIn selfaddress = {0};
     selfaddress.sin_family = AF_INET;
     selfaddress.sin_port = htons(6789);
@@ -126,12 +125,10 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     if(size>0){
         if(packet.signature == NI_SIGNATURE
            && packet.packettype == kNIHandShake){//simple handshake
-            if(host){
-                //client sent a handshake
-                //save the address
-                sizeofpeeraddress = sizeofaddress;
-                memcpy(&peeraddress,&address,sizeofaddress);
-            }
+            //client sent a handshake
+            //save the address
+            sizeofpeeraddress = sizeofaddress;
+            memcpy(&peeraddress,&address,sizeofaddress);
         }
         callback(packet,size);
     }else{
