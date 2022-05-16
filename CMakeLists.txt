@@ -1,8 +1,11 @@
 cmake_minimum_required(VERSION 3.0)
 
 project(rollback)
-
-add_executable(rollback main.cpp entity.cpp gamestate.cpp netinterface.cpp game.cpp stage.cpp)
+if(WIN32)
+	add_executable(rollback WIN32 main.cpp entity.cpp gamestate.cpp netinterface.cpp game.cpp stage.cpp)
+else()
+	add_executable(rollback main.cpp entity.cpp gamestate.cpp netinterface.cpp game.cpp stage.cpp)
+endif()
 
 target_include_directories(rollback PUBLIC "include")
 

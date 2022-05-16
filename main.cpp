@@ -6,8 +6,12 @@ void update();
 
 bool host;
 Game* g ;
-int main(int argc, char* argv[]) {
-    
+#ifdef NETINTERFACE_USING_WINDOWS
+int __stdcall WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdline, int cmdshow)
+#else
+int main()
+#endif
+{
     
     /*
      *Change this depending on whether you're host or not
