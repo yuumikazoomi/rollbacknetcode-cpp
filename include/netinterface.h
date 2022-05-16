@@ -44,7 +44,18 @@ typedef struct SNIRelayPacket{
     uint16_t packettype;
     uint32_t extra;
 }NIRelayPacket;
+
+
+
 void printpacket(const NIRelayPacket& p);
+void printpacket(NIRelayPacket* p);
+uint16_t getlowtwo(uint32_t bytes);
+uint16_t gethightwo(uint32_t bytes);
+void sethightwo(uint32_t* bytes,uint16_t high);
+void setlowtwo(uint32_t* bytes,uint16_t low);
+
+
+
 class NetInterface{
 private:
     NISocket connection;

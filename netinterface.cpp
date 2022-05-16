@@ -10,6 +10,21 @@ void printpacket(NIRelayPacket* p){
     printf("packettype:%x\n",p->packettype);
     printf("extra:%x\n",p->extra);
 }
+uint16_t getlowtwo(uint32_t bytes){
+    return bytes&0xFFFF;
+}
+uint16_t gethightwo(uint32_t bytes){
+    return bytes>>16&0xFFFF;
+}
+void sethightwo(uint32_t* bytes,uint16_t high){
+    uint32_t tmp = high;
+    tmp<<=16;
+    *bytes|=tmp;
+}
+void setlowtwo(uint32_t* bytes,uint16_t low){
+    uint32_t tmp = low;
+    *bytes|=tmp;
+}
 NetInterface::NetInterface()
 {
 #ifdef NETINTERFACE_USING_WINDOWS
