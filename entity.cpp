@@ -3,7 +3,7 @@
 Entity::Entity(){
     score = 0;
     speed = 7;
-    position = (Vector2){0, 0};
+    memset(&position,0,sizeof(Vector2));
     direction = kDirectionDown;
 }
 uint32_t Entity::getscore(){
