@@ -4,21 +4,23 @@ void draw(SDL_Renderer* renderer);
 void update();
 
 
-bool host;
 Game* g ;
 #ifdef NETINTERFACE_USING_WINDOWS
 int __stdcall WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 #else
-int main()
+int main(int argc, char* argv[])
 #endif
 {
     
     /*
      *Change this depending on whether you're host or not
      */
-
-    host = false;
-    
+    bool host = true;
+#ifdef NETINTERFACE_USING_BSD
+    if(argc>1){
+        host = false;
+    }
+#endif
     
     g = new Game(host);
     

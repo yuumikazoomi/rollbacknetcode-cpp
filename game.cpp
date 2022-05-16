@@ -77,6 +77,7 @@ void Game::update(){
         
         if(packet.packettype == kProvidedInput){
             //save the peers input and later call update on it
+            
             memcpy(&peerinput,&packet,sizeof(NIRelayPacket));
         }
     };
@@ -152,8 +153,9 @@ void Game::update(){
          */
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
-        
-        
+        if(apponentinput!=0){
+            printf("%d\n",apponentinput);
+        }
         //update gamestate with both our input and peer's input
         state.update(myinput,apponentinput);
         
