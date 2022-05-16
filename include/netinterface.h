@@ -45,7 +45,7 @@ typedef struct SNIRelayPacket{
 class NetInterface{
 private:
     NISocket connection;
-    bool server;
+    bool host;
     NISockAddrIn peeraddress;
 public:
     NetInterface();

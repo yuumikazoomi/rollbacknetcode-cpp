@@ -11,7 +11,6 @@ NetInterface::NetInterface()
 }
 bool NetInterface::makesocket()
 {
-    server = true;
     connection = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
     if(connection<=0){
         return false;
@@ -32,7 +31,7 @@ bool NetInterface::makesocket()
     
 }
 bool NetInterface::makesocketbind(){
-    server = true;
+    host = true;
     NISockAddrIn selfaddress = {0};
     selfaddress.sin_family = AF_INET;
     selfaddress.sin_port = htons(6789);
@@ -70,7 +69,7 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
     if(size == sizeof(NIRelayPacket)){
         availabledata = true;
         if(packet.signature == NI_SIGNATURE){//simple handshake
-            if(server){
+            if(host){
                 //client sent a handshake
                 memcpy(&peeraddress,&address,sizeofaddress);
             }
