@@ -47,13 +47,14 @@ private:
     NISocket connection;
     bool host;
     NISockAddrIn peeraddress;
+    NISockAddrSize sizeofpeeraddress;
 public:
     NetInterface();
     bool makesocket();
     bool makesocketbind();
     void destroysocket();
-    void poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback);
-    void sendinput(uint16_t input,std::function<void(bool&)> callback);
+    void poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback);
+    void sendinput(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback);
     
     bool iserrornonblock();
     int getlasterror();

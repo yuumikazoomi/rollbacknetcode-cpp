@@ -69,10 +69,10 @@ void NetInterface::destroysocket()
     }
 #endif
 }
-void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback){
+void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback){
     NIRelayPacket packet = {0};
     NISockAddrIn address = {0};
-    NISockAddrSize sizeofaddress= sizeof(NISockAddrIn);
+    NISockAddrSize sizeofaddress = sizeof(NISockAddrIn);
     bool error = false;
     bool availabledata = false;
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
@@ -83,6 +83,7 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
             if(host){
                 //client sent a handshake
                 //save the address
+                sizeofpeeraddress = sizeofaddress;
                 memcpy(&peeraddress,&address,sizeofaddress);
             }
         }
@@ -91,10 +92,17 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
             error = true;
         }
     }
-    callback(packet,availabledata,error);
+    callback(packet,size,availabledata,error);
 }
-void NetInterface::sendinput(uint16_t input,std::function<void(bool&)> callback){
-    
+void NetInterface::sendinput(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback){
+    NITransferSize size = sendto(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
+    bool error = false;
+    if(size <= 0){
+        if(!iserrornonblock()){
+            error = true;
+        }
+    }
+    callback(size,error);
 }
 bool NetInterface::iserrornonblock(){
     int error = getlasterror();
