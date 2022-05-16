@@ -6,7 +6,6 @@ int main(int argc, char* argv[]) {
     SDL_Window *window;
 
     SDL_Init(SDL_INIT_VIDEO);
-
     window = SDL_CreateWindow(
         "An SDL2 window",
         SDL_WINDOWPOS_UNDEFINED,
@@ -21,6 +20,7 @@ int main(int argc, char* argv[]) {
         return 1;
     }
     
+    SDL_Renderer* render = SDL_CreateRenderer(window,-1, SDL_RENDERER_PRESENTVSYNC);
     SDL_Event event;
     int quit = 0;
     while( !quit ){
@@ -48,6 +48,7 @@ int main(int argc, char* argv[]) {
         }
 
     }
+    SDL_DestroyRenderer(render);
     SDL_DestroyWindow(window);
 
     SDL_Quit();

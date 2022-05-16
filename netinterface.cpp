@@ -71,6 +71,7 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
         if(packet.signature == NI_SIGNATURE){//simple handshake
             if(host){
                 //client sent a handshake
+                //save the address
                 memcpy(&peeraddress,&address,sizeofaddress);
             }
         }
