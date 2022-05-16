@@ -8,6 +8,7 @@ private:
     NetInterface net;
     bool host;
     bool processing;
+    uint16_t currentframe;
 public:
     Game(bool host);
     void update();

@@ -9,11 +9,11 @@
 #include <vector>
 #include <netinterface.h>
 enum Direction{
-    kDirectionNone = 0,
-    kDirectionRight = 1,
-    kDirectionDown,
-    kDirectionLeft,
-    kDirectionUp
+    kInputNone = 0,
+    kInputRight = 1,
+    kInputDown,
+    kInputLeft,
+    kInputUp
 };
 typedef struct SVector2{
     int x;
@@ -22,7 +22,6 @@ typedef struct SVector2{
 class Entity{
 private:
     uint32_t score;
-    uint16_t direction ;
     Vector2 position ;
     int speed;
 public:
@@ -31,11 +30,7 @@ public:
     void setscore(uint32_t score);
     void incrementscore();
     const Vector2& getposition();
-    void update(int time);
-    uint16_t getdirection();
-    void updatedirection(int directon);
+    void update(uint16_t input, int time);
     void forcesetposition(const Vector2& position);
-    int getlasterror();
-    bool iserrornonblock();
 };
 #endif

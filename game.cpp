@@ -3,6 +3,8 @@
 
 Game::Game(bool host) : state(host),level(&state){
     this->host = host;
+    currentframe = 0;
+    
     if(host){
         if(!net.makesocketbind()){
             //maybe show an error
@@ -56,39 +58,33 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             state.setrandomseed(seed);
         }
             break;
-        case kProvidedInput:{
-            /*
-             *            four byte packet
-             *
-             *        high              low
-             *      two bytes         two bytes
-             *        input             frame
-             * | - - - - - - - - | - - - - - - - - |
-             */
-            uint16_t frame = getlowtwo(packet.extra);
-            uint16_t input = gethightwo(packet.extra);
-            state.updatedirection(state.getapponent(),input,frame);
-        }
-            break;
-        case kProvidedNoInput:{
-            uint16_t frame = getlowtwo(packet.extra);
-            
-            //user sent no input on frame x
-        }
-            break;
+        
         default:
             break;
     }
 }
 void Game::update(){
     //check network
-    auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
+    
+    //we're going to save this so later we can call update on the input
+    NIRelayPacket peerinput = {0};
+    
+    
+    auto netcallback = [this,peerinput](const NIRelayPacket& packet,NITransferSize size) mutable {
         //handle pckets
         handlepacket(packet,size);
+        
+        
+        if(packet.packettype == kProvidedInput){
+            //save the peers input and later call update on it
+            memcpy(&peerinput,&packet,sizeof(NIRelayPacket));
+        }
     };
     net.poll(netcallback);
-    uint16_t direction = 0;
-    bool directionchanged = false;
+    
+    
+    
+    uint16_t myinput = 0;
     SDL_Event event;
     
     while(SDL_PollEvent(&event)){
@@ -100,23 +96,19 @@ void Game::update(){
             case SDL_KEYDOWN:{
                 switch (event.key.keysym.sym) {
                     case SDLK_RIGHT:{
-                        directionchanged = true;
-                        direction = kDirectionRight;
+                        myinput = kInputRight;
                     }
                         break;
                     case SDLK_DOWN:{
-                        directionchanged = true;
-                        direction = kDirectionDown;
+                        myinput = kInputDown;
                     }
                         break;
                     case SDLK_LEFT:{
-                        directionchanged = true;
-                        direction = kDirectionLeft;
+                        myinput = kInputLeft;
                     }
                         break;
                     case SDLK_UP:{
-                        directionchanged = true;
-                        direction = kDirectionUp;
+                        myinput = kInputUp;
                     }
                         break;
                 }
@@ -127,32 +119,34 @@ void Game::update(){
         }
     }
     if(processing){
-        //send input to peer
-        if(directionchanged){
-            state.updatedirection(direction);
-            
-            NIRelayPacket packet = {0};
-            packet.packettype = kProvidedInput;
-            packet.signature = NI_SIGNATURE;
-            
-            //make the packet
-            sethightwo(&packet.extra,state.getself()->getdirection());
-            setlowtwo(&packet.extra,state.getframecount());
-            
-            //send the packet
-            net.sendpacket(&packet);
-        }else{
-            //send no input packet
-            NIRelayPacket packet = {0};
-            packet.packettype = kProvidedNoInput;
-            packet.signature = NI_SIGNATURE;
-            setlowtwo(&packet.extra,state.getframecount());
-            
-            //send the packet
-            net.sendpacket(&packet);
-        }
+        
+        NIRelayPacket packet = {0};
+        packet.packettype = kProvidedInput;
+        packet.signature = NI_SIGNATURE;
+        
+        //make packet with our input
+        sethightwo(&packet.extra,myinput);
+        setlowtwo(&packet.extra,currentframe);
+        
+        //send packet
+        net.sendpacket(&packet);
+        
         //update
-        state.update();
+        /*
+         *            four byte packet
+         *
+         *        high              low
+         *      two bytes         two bytes
+         *        input             frame
+         * | - - - - - - - - | - - - - - - - - |
+         */
+        uint16_t apponentframe = getlowtwo(peerinput.extra);
+        uint16_t apponentinput = gethightwo(peerinput.extra);
+        
+        
+        //update gamestate with both our input and peer's input
+        state.update(myinput,apponentinput);
+        
     }
     
     
