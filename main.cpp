@@ -17,7 +17,7 @@ int main()
      *Change this depending on whether you're host or not
      */
 
-    host = true;
+    host = false;
     
     
     g = new Game(host);

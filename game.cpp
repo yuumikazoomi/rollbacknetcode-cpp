@@ -125,8 +125,18 @@ void Game::update(){
         packet.signature = NI_SIGNATURE;
         
         //make packet with our input
+        /*
+         *            four byte packet
+         *
+         *        high              low
+         *      two bytes         two bytes
+         *        input             frame
+         * | - - - - - - - - | - - - - - - - - |
+         */
         sethightwo(&packet.extra,myinput);
         setlowtwo(&packet.extra,currentframe);
+        
+        
         
         //send packet
         net.sendpacket(&packet);

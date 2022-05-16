@@ -61,11 +61,6 @@ void GameState::update(uint16_t myinput,uint16_t apponentinput){
     }
 }
 
-void GameState::rollback(uint16_t direction, uint16_t targetframe)
-{
-    
-}
-
 Entity *GameState::getapponent(){
     return &apponent;
 }

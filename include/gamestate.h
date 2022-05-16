@@ -38,7 +38,6 @@ public:
     bool iscollidingwithobjective(Vector2 position);
     void entityupdate(Entity* e);
 
-    void rollback(uint16_t direction,uint16_t targetframe);
     uint32_t xorshift32(uint32_t *state);
     
     bool gethost();

@@ -2,7 +2,7 @@
 
 Entity::Entity(){
     score = 0;
-    speed = 7;
+    speed = 10;
     memset(&position,0,sizeof(Vector2));
 }
 uint32_t Entity::getscore(){
@@ -18,24 +18,24 @@ const Vector2 &Entity::getposition(){
     return position;
 }
 void Entity::update(uint16_t input,int time){
-    /*
+    
     switch (input){
-        case kDirectionRight:
+        case kInputRight:
             position.x += speed * time;
             break;
-        case kDirectionDown:
+        case kInputDown:
             position.y += speed * time;
             break;
-        case kDirectionLeft:
+        case kInputLeft:
             position.x -= speed * time;
             break;
-        case kDirectionUp:
+        case kInputUp:
             position.y -= speed * time;
             break;
         default:
             break;
     }
-     */
+     
 }
 void Entity::forcesetposition(const Vector2& position){
     this->position = position;
