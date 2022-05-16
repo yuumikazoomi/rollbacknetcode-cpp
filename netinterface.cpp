@@ -105,6 +105,8 @@ void NetInterface::setremoteaddress(const char* hostname, uint16_t port){
     inet_aton(hostname,&peeraddress.sin_addr);
 #endif
     peeraddress.sin_port = htons(port);
+    peeraddress.sin_family = AF_INET;
+    sizeofpeeraddress = sizeof(peeraddress);
 }
 void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)> callback){
     NIRelayPacket packet = {0};
@@ -138,13 +140,14 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     
 }
 void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize)> callback){
+    //WAIT DID WE SET THE SIZE CORRECLTY?!!
     NITransferSize size = sendto(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
-    bool error = false;
-    if(size <= 0){
+    if(size < 0){
+        printf("size is less than or equal to 0\n");
         if(!iserrornonblock()){
-            error = true;
         }
     }else{
+        
         if(callback!=nullptr){
             callback(size);
         }
