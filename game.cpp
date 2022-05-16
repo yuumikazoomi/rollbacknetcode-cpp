@@ -9,7 +9,7 @@ Game::Game(bool host) : state(host),level(&state){
         }
     }else{
         if(net.makesocket()){
-            net.setremoteaddress("0.0.0.0",6789);
+            net.setremoteaddress("127.0.0.1",6789);
             //send handshake
             NIRelayPacket packet = {0};
             packet.signature = NI_SIGNATURE;
