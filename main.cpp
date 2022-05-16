@@ -39,14 +39,7 @@ int main(int argc, char* argv[]) {
     bool alive = true;
     
     while (alive){
-        SDL_Event event;
-        while (SDL_PollEvent(&event)){
-            switch (event.type){
-                case SDL_QUIT:
-                    alive = SDL_FALSE;
-                    break;
-            }
-        }
+        
         update();
         draw(renderer);
     }

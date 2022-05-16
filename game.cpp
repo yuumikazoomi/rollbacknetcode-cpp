@@ -15,6 +15,17 @@ Game::Game(bool host) : state(host),level(&state){
     
 }
 void Game::update(){
+    //check input
+    SDL_Event event;
+    while (SDL_PollEvent(&event)){
+        switch (event.type){
+            case SDL_QUIT:
+                //quit
+                break;
+        }
+    }
+    
+    //check network
     auto netcallback = [](const NIRelayPacket& packet,NITransferSize size,bool& availabledata,bool& error){
         if(availabledata){
             printf("we got data!\n");
@@ -24,7 +35,7 @@ void Game::update(){
     };
     net.poll(netcallback);
     
-    
+    //update
     state.update();
 }
 void Game::draw(SDL_Renderer* renderer){
