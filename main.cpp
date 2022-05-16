@@ -56,16 +56,7 @@ int main(int argc, char* argv[]) {
 }
 
 void update(){
-    /*
-    auto netcallback = [](const NIRelayPacket& packet,NITransferSize size,bool& availabledata,bool& error){
-        if(availabledata){
-            printf("we got data!\n");
-        }else if(error){
-            printf("we got an error!\n");
-        }
-    };
-    netcode->poll(netcallback);
-     */
+    g->update();
 }
 void draw(SDL_Renderer* renderer){
     g->draw(renderer);
