@@ -20,7 +20,8 @@ typedef int     NISockAddrSize;
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
-#include <netdb.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
 #include <unistd.h>
 #include <errno.h>
 typedef int         NISocket;
@@ -55,10 +56,9 @@ public:
     void destroysocket();
     void poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback);
     void sendinput(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback);
-    
     bool iserrornonblock();
     int getlasterror();
-
+    void setremoteaddress(const char* hostname, uint16_t port);
     
     ~NetInterface();
 };

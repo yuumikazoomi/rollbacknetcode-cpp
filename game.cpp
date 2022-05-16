@@ -8,6 +8,7 @@ Game::Game(bool host) : state(host),level(&state){
         }
     }else{
         if(!net.makesocket()){
+            net.setremoteaddress("0.0.0.0",6789);
             //maybe show an error
         }
     }

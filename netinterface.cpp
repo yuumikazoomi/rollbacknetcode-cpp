@@ -69,6 +69,14 @@ void NetInterface::destroysocket()
     }
 #endif
 }
+void NetInterface::setremoteaddress(const char* hostname, uint16_t port){
+#ifdef NETINTERFACE_USING_WINDOWS
+    InetPtonA(AF_INET,hostname,&peeraddress.sin_addr)
+#else
+    inet_aton(hostname,&peeraddress.sin_addr);
+#endif
+    peeraddress.sin_port = htons(port);
+}
 void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback){
     NIRelayPacket packet = {0};
     NISockAddrIn address = {0};
