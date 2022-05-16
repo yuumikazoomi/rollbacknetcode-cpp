@@ -14,12 +14,7 @@ Game::Game(bool host) : state(host),level(&state){
             packet.signature = NI_SIGNATURE;
             packet.packettype = kNIHandShake;
             
-            auto cb = [this](NITransferSize size,bool error){
-                if(error){
-                    //show a  error
-                }
-            };
-            net.sendpacket(&packet,cb);
+            net.sendpacket(&packet);
         }else{
             //maybe show an error
         }
@@ -38,11 +33,28 @@ void Game::update(){
     }
     
     //check network
-    auto netcallback = [](const NIRelayPacket& packet,NITransferSize size,bool& availabledata,bool& error){
+    auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size,bool& availabledata,bool& error){
         if(availabledata){
-            printf("we got data!\n");
+            switch (packet.packettype) {
+                case kNIHandShake:{
+                    //send them our seed
+                    uint32_t seed = state.getrandomseed();
+                    NIRelayPacket outgoing = {0};
+                    outgoing.packettype = kSeed;
+                    outgoing.signature = NI_SIGNATURE;
+                    outgoing.extra = seed;
+                    
+                    net.sendpacket(&outgoing);
+                    
+                }
+                    
+                    break;
+                    
+                default:
+                    break;
+            }
         }else if(error){
-            printf("we got an error!\n");
+            
         }
     };
     net.poll(netcallback);

@@ -42,6 +42,7 @@ typedef struct SNIRelayPacket{
     uint16_t packettype;
     uint16_t frame;
     uint16_t input;
+    uint64_t extra;
 }NIRelayPacket;
 class NetInterface{
 private:
@@ -55,7 +56,7 @@ public:
     bool makesocketbind();
     void destroysocket();
     void poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback);
-    void sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback);
+    void sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback = nullptr);
     bool iserrornonblock();
     int getlasterror();
     void setremoteaddress(const char* hostname, uint16_t port);

@@ -110,7 +110,10 @@ void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransfe
             error = true;
         }
     }
-    callback(size,error);
+    if(callback!=nullptr){
+        callback(size,error);
+    }
+    
 }
 bool NetInterface::iserrornonblock(){
     int error = getlasterror();
