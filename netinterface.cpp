@@ -21,11 +21,21 @@ bool NetInterface::makesocket()
         destroysocket();
         return false;
     }
+#ifdef NETINTERFACE_USING_WINDOWS
     int timeout = 1;
     if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
         destroysocket();
         return false;
     }
+#else
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 1000;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
+        destroysocket();
+        return false;
+    }
+#endif
 
     return true;
     

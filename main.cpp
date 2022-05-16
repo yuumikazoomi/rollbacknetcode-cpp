@@ -3,19 +3,36 @@
 void draw(SDL_Renderer* renderer);
 void update();
 
+
+bool host;
+NetInterface* netcode;
+GameState* gs;
 int main(int argc, char* argv[]) {
     
-    SDL_Window *window;
+    
+    /*
+     *Change this depending on whether you're host or not
+     */
+    host = true;
+    
+    netcode = new NetInterface;
+    gs = new GameState(host);
+    
+    if(!netcode->makesocketbind()){
+        delete gs;
+        delete netcode;
+        return 1;
+    }
     
     SDL_Init(SDL_INIT_VIDEO);
-    window = SDL_CreateWindow(
-                              "An SDL2 window",
-                              SDL_WINDOWPOS_UNDEFINED,
-                              SDL_WINDOWPOS_UNDEFINED,
-                              1080,
-                              720,
-                              0
-                              );
+    SDL_Window *window = SDL_CreateWindow(
+                                          "An SDL2 window",
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          SDL_WINDOWPOS_UNDEFINED,
+                                          1080,
+                                          720,
+                                          0
+                                          );
     
     if (window == NULL) {
         return 1;
@@ -42,8 +59,16 @@ int main(int argc, char* argv[]) {
     SDL_Quit();
     return 0;
 }
+
 void update(){
-    
+    auto netcallback = [](const NIRelayPacket& packet,bool& availabledata,bool& error){
+        if(availabledata){
+            printf("we got data!\n");
+        }else if(error){
+            printf("we got an error!\n");
+        }
+    };
+    netcode->poll(netcallback);
 }
 void draw(SDL_Renderer* renderer){
     SDL_SetRenderDrawColor( renderer, 245, 245, 245, 255 );
