@@ -1,29 +1,22 @@
 
-#include <gamestate.h>
+#include <game.h>
 void draw(SDL_Renderer* renderer);
 void update();
 
 
 bool host;
-NetInterface* netcode;
-GameState* gs;
+Game* g ;
 int main(int argc, char* argv[]) {
     
     
     /*
      *Change this depending on whether you're host or not
      */
+
     host = true;
     
-    netcode = new NetInterface;
-    gs = new GameState(host);
     
-    if(!netcode->makesocketbind()){
-        delete gs;
-        delete netcode;
-        return 1;
-    }
-    
+    g = new Game(host);
     
     SDL_Init(SDL_INIT_VIDEO);
     
@@ -63,6 +56,7 @@ int main(int argc, char* argv[]) {
 }
 
 void update(){
+    /*
     auto netcallback = [](const NIRelayPacket& packet,NITransferSize size,bool& availabledata,bool& error){
         if(availabledata){
             printf("we got data!\n");
@@ -71,9 +65,10 @@ void update(){
         }
     };
     netcode->poll(netcallback);
+     */
 }
 void draw(SDL_Renderer* renderer){
-
+/*
     SDL_SetRenderDrawColor( renderer, 245, 245, 245, 255 );
     SDL_RenderClear(renderer);
     
@@ -83,4 +78,5 @@ void draw(SDL_Renderer* renderer){
     SDL_RenderFillRect( renderer, &r );
     
     SDL_RenderPresent(renderer);
+ */
 }
