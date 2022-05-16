@@ -8,8 +8,7 @@
 #include <memory>
 #include <vector>
 #include <netinterface.h>
-enum Direction
-{
+enum Direction{
     kDirectionRight =1,
     kDirectionDown,
     kDirectionLeft,
@@ -19,8 +18,7 @@ typedef struct SVector2{
     int x;
     int y;
 }Vector2;
-class Entity
-{
+class Entity{
 private:
     uint32_t score;
     uint16_t direction ;
@@ -36,5 +34,7 @@ public:
     uint16_t getdirection();
     void updatedirection(int directon);
     void forcesetposition(const Vector2& position);
+    int getlasterror();
+    bool iserrornonblock();
 };
 #endif

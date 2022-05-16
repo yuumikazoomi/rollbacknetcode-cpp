@@ -22,6 +22,7 @@ typedef int     NISockAddrSize;
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
+#include <errno.h>
 typedef int         NISocket;
 typedef size_t      NITransferSize;
 typedef socklen_t   NISockAddrSize;

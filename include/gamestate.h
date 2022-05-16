@@ -41,8 +41,7 @@ typedef struct SGameStateAbstract{
 
 #define TEXTUREWIDTH 32
 #define TEXTUREHEIGHT 32
-class GameState
-{
+class GameState{
 private:
 //rollback relevangt
     Entity me;
