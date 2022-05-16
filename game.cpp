@@ -114,11 +114,17 @@ void Game::update(){
     
     //send input to peer
     if(directionchanged){
+        
+        
         NIRelayPacket packet = {0};
         packet.packettype = kProvidedInput;
         packet.signature = NI_SIGNATURE;
+        
+        //make the packet
         sethightwo(&packet.extra,state.getself()->getdirection());
         setlowtwo(&packet.extra,state.getframecount());
+        
+        //send the packet
         net.sendpacket(&packet);
     }
     
