@@ -152,7 +152,6 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
     
     if(size==sizeof(NIRelayPacket)){
-        printpacket(packet);
         if(packet.signature == NI_SIGNATURE
            && packet.packettype == kNIHandShake){//simple handshake
             //client sent a handshake
@@ -168,15 +167,11 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     
 }
 void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize)> callback){
-    printpacket(packet);
     NITransferSize size = sendto(connection,(char*)packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
     if(size < 0){
         if(!iserrornonblock()){
         }
     }else{
-        NIRelayPacket p = {0};
-        memcpy(&p,packet,sizeof(NIRelayPacket));
-        printpacket(p);
         if(callback!=nullptr){
             callback(size);
         }

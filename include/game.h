@@ -7,6 +7,7 @@ private:
     GameState state;
     NetInterface net;
     bool host;
+    bool processing;
 public:
     Game(bool host);
     void update();

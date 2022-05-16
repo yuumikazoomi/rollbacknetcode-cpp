@@ -30,6 +30,7 @@ Game::Game(bool host) : state(host),level(&state){
             //maybe show an error
         }
     }
+    processing = false;
     
 }
 void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
@@ -44,9 +45,13 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             outgoing.extra = seed;
             
             net.sendpacket(&outgoing);
+            
+            //begin gameplay
+            processing = true;
         }
             break;
         case kSeed:{
+            processing = true;
             uint32_t seed = (uint32_t)packet.extra;
             state.setrandomseed(seed);
         }
@@ -70,40 +75,6 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
     }
 }
 void Game::update(){
-    //check input
-    SDL_Event event;
-    bool directionchanged = false;
-    while (SDL_PollEvent(&event)){
-        switch (event.type){
-            case SDL_QUIT:
-                exit(1);
-                //quit
-                break;
-            case SDLK_RIGHT:{
-                directionchanged = true;
-                state.updatedirection(kDirectionRight);
-            }
-                break;
-            case SDLK_DOWN:{
-                directionchanged = true;
-                state.updatedirection(kDirectionDown);
-            }
-                break;
-            case SDLK_LEFT:{
-                directionchanged = true;
-                state.updatedirection(kDirectionLeft);
-            }
-                break;
-            case SDLK_UP:{
-                directionchanged = true;
-                state.updatedirection(kDirectionUp);
-            }
-                break;
-            default:
-                break;
-        }
-    }
-    
     //check network
     auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
         //handle pckets
@@ -111,25 +82,61 @@ void Game::update(){
     };
     net.poll(netcallback);
     
-    //send input to peer
-    if(directionchanged){
+    if(processing){
+        //check input
+        SDL_Event event;
+        bool directionchanged = false;
+        while (SDL_PollEvent(&event)){
+            switch (event.type){
+                case SDL_QUIT:
+                    exit(1);
+                    //quit
+                    break;
+                case SDLK_RIGHT:{
+                    directionchanged = true;
+                    state.updatedirection(kDirectionRight);
+                }
+                    break;
+                case SDLK_DOWN:{
+                    directionchanged = true;
+                    state.updatedirection(kDirectionDown);
+                }
+                    break;
+                case SDLK_LEFT:{
+                    directionchanged = true;
+                    state.updatedirection(kDirectionLeft);
+                }
+                    break;
+                case SDLK_UP:{
+                    directionchanged = true;
+                    state.updatedirection(kDirectionUp);
+                }
+                    break;
+                default:
+                    break;
+            }
+        }
+        //send input to peer
+        if(directionchanged){
+            
+            
+            NIRelayPacket packet = {0};
+            packet.packettype = kProvidedInput;
+            packet.signature = NI_SIGNATURE;
+            
+            //make the packet
+            sethightwo(&packet.extra,state.getself()->getdirection());
+            setlowtwo(&packet.extra,state.getframecount());
+            
+            //send the packet
+            net.sendpacket(&packet);
+        }
         
         
-        NIRelayPacket packet = {0};
-        packet.packettype = kProvidedInput;
-        packet.signature = NI_SIGNATURE;
-        
-        //make the packet
-        sethightwo(&packet.extra,state.getself()->getdirection());
-        setlowtwo(&packet.extra,state.getframecount());
-        
-        //send the packet
-        net.sendpacket(&packet);
+        //update
+        state.update();
     }
     
-    
-    //update
-    state.update();
     
     
 }
