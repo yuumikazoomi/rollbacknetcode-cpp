@@ -53,6 +53,10 @@ public:
     bool makesocketbind();
     void destroysocket();
     void poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback);
+    
+    bool iserrornonblock();
+    int getlasterror();
+    
     ~NetInterface();
 };
 #endif

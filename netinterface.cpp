@@ -69,8 +69,16 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
     if(size == sizeof(NIRelayPacket)){
         availabledata = true;
+        if(packet.signature == NI_SIGNATURE){//simple handshake
+            if(server){
+                //client sent a handshake
+                memcpy(&peeraddress,&address,sizeofaddress);
+            }
+        }
     }else if(size <= 0){
-        
+        if(!iserrornonblock()){
+            error = true;
+        }
     }
     callback(packet,availabledata,error);
 }
