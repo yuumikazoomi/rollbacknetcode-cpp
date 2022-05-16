@@ -18,7 +18,6 @@ Game::Game(bool host) : state(host),level(&state){
             
             auto t = [this,packet](NITransferSize size){
                 if(size == sizeof(NIRelayPacket)){
-                    printf("sent handshake\n");
                     printpacket(packet);
                 }else{
                 }
@@ -48,11 +47,9 @@ void Game::update(){
     
     //check network
     auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
-        printf("We got data:%d\n",size);
         printpacket(packet);
         switch (packet.packettype) {
             case kNIHandShake:{
-                printf("we got a handshake\n");
                 //send them our seed
                 uint32_t seed = state.getrandomseed();
                 
@@ -62,12 +59,11 @@ void Game::update(){
                 outgoing.extra = seed;
                 
                 net.sendpacket(&outgoing);
-                printf("we sent a seed:%x\n",seed);
             }
                 break;
             case kSeed:{
                 uint32_t seed = (uint32_t)packet.extra;
-                printf("We got a seed:%x\n",seed);
+                state.setrandomseed(seed);
             }
                 break;
             default:
