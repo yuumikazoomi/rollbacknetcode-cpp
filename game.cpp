@@ -58,7 +58,10 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             state.setrandomseed(seed);
         }
             break;
-        
+        case kProvidedInput:{
+            memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
+        }
+            break;
         default:
             break;
     }
@@ -73,14 +76,6 @@ void Game::update(){
     auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size) mutable {
         //handle pckets
         handlepacket(packet,size);
-        
-        
-        if(packet.packettype == kProvidedInput){
-            //save the peers input and later call update on it
-            if(packet.extra!=0){
-            }
-            memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
-        }
     };
     net.poll(netcallback);
     
