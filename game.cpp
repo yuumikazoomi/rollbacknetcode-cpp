@@ -30,7 +30,7 @@ Game::Game(bool host) : state(host),level(&state){
             //maybe show an error
         }
     }
-    processing = true;
+    processing = false;
     
 }
 void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){

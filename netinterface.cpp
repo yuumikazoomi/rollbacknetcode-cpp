@@ -83,15 +83,6 @@ bool NetInterface::makesocket()
         destroysocket();
         return false;
     }
-    /*
-     #ifdef NETINTERFACE_USING_WINDOWS
-     u_long iMode=1;
-     ioctlsocket(connection,FIONBIO,&iMode);
-     #else
-     int flags = fcntl(connection,F_GETFL,0);
-     fcntl(connection, F_SETFL, flags | O_NONBLOCK);
-     #endif
-     */
     nonblock();
     return true;
     
@@ -125,7 +116,7 @@ void NetInterface::destroysocket()
 }
 void NetInterface::setremoteaddress(const char* hostname, uint16_t port){
 #ifdef NETINTERFACE_USING_WINDOWS
-    InetPtonA(AF_INET,hostname,&peeraddress.sin_addr)
+    InetPtonA(AF_INET,hostname,&peeraddress.sin_addr);
 #else
     inet_aton(hostname,&peeraddress.sin_addr);
 #endif
