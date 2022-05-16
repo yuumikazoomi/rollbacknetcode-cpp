@@ -67,7 +67,7 @@ void NetInterface::destroysocket()
     }
 #endif
 }
-void NetInterface::poll(RelayPacket* packet, bool* availabledata, bool* error){
+void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback){
     
 }
 NetInterface::~NetInterface()

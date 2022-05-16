@@ -23,19 +23,19 @@ typedef SOCKET NISocket;
 typedef int NISocket;
 #endif
 #include <string.h>
-#include <stdbool.h>
+#include <functional>
 #define NI_SIGNATURE 0xDEAD
 enum NIPacketId {
     kNIHandShake = 1,
 };
 typedef struct sockaddr_in  NISockAddrIn;
 typedef struct sockaddr     NISockAddr;
-typedef struct SRelayPacket{
+typedef struct SNIRelayPacket{
     uint16_t header;
     uint16_t signature;
     uint16_t frame;
     uint16_t input;
-}RelayPacket;
+}NIRelayPacket;
 class NetInterface{
 private:
     NISocket connection;
@@ -46,7 +46,7 @@ public:
     bool makesocket();
     bool makesocketbind();
     void destroysocket();
-    void poll(RelayPacket* packet, bool* availabledata, bool* error);
+    void poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback);
     ~NetInterface();
     
 };
