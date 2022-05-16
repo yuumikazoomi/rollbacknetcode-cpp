@@ -129,17 +129,6 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     NISockAddrIn address = {0};
     NISockAddrSize sizeofaddress = sizeof(NISockAddrIn);
     
-    /*
-     fd_set  fdread;
-     FD_ZERO(&fdread);
-     FD_SET(connection, &fdread);
-     struct timeval wait = {0};
-     wait.tv_usec = 1000;
-     int ret = select(connection+1,&fdread,NULL,NULL,&wait);
-     if(ret<=0){
-     return;
-     }
-     */
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
     
     if(size==sizeof(NIRelayPacket)){
