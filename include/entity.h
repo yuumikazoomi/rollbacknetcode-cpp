@@ -9,7 +9,8 @@
 #include <vector>
 #include <netinterface.h>
 enum Direction{
-    kDirectionRight =1,
+    kDirectionNone = 0,
+    kDirectionRight = 1,
     kDirectionDown,
     kDirectionLeft,
     kDirectionUp

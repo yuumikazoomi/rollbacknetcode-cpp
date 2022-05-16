@@ -30,7 +30,7 @@ Game::Game(bool host) : state(host),level(&state){
             //maybe show an error
         }
     }
-    processing = false;
+    processing = true;
     
 }
 void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
@@ -85,30 +85,35 @@ void Game::update(){
     bool directionchanged = false;
     SDL_Event event;
     
-    while (SDL_PollEvent(&event)){
+    while(SDL_PollEvent(&event)){
         switch (event.type){
             case SDL_QUIT:
                 exit(1);
                 //quit
                 break;
-            case SDLK_RIGHT:{
-                directionchanged = true;
-                directionchanged = kDirectionRight;
-            }
-                break;
-            case SDLK_DOWN:{
-                directionchanged = true;
-                direction = kDirectionDown;
-            }
-                break;
-            case SDLK_LEFT:{
-                directionchanged = true;
-                direction = kDirectionLeft;
-            }
-                break;
-            case SDLK_UP:{
-                directionchanged = true;
-                direction = kDirectionUp;
+            case SDL_KEYDOWN:{
+                switch (event.key.keysym.sym) {
+                    case SDLK_RIGHT:{
+                        directionchanged = true;
+                        directionchanged = kDirectionRight;
+                    }
+                        break;
+                    case SDLK_DOWN:{
+                        directionchanged = true;
+                        direction = kDirectionDown;
+                    }
+                        break;
+                    case SDLK_LEFT:{
+                        directionchanged = true;
+                        direction = kDirectionLeft;
+                    }
+                        break;
+                    case SDLK_UP:{
+                        directionchanged = true;
+                        direction = kDirectionUp;
+                    }
+                        break;
+                }
             }
                 break;
             default:

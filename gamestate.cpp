@@ -46,12 +46,12 @@ void GameState::entityupdate(Entity *e)
     e->update(timestep);
     
     Vector2 epos = e->getposition();
-    /*
+    
     if (iscollidingwithobjective(epos)){
         e->incrementscore();
         spawnobjective();
     }
-     */
+     
     if (epos.x < 0){
         e->updatedirection(kDirectionRight);
     }
