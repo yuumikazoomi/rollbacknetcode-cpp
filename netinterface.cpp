@@ -9,18 +9,24 @@ NetInterface::NetInterface()
 #endif
     memset(&peeraddress,0,sizeof(NISockAddrIn));
 }
-bool NetInterface::makesocket()
-{
-    connection = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
-    if(connection<=0){
-        return false;
-    }
-
-    int enable = 1;
-    if (setsockopt(connection, SOL_SOCKET, SO_REUSEADDR, (char*)&enable, sizeof(int)) != 0){
+bool NetInterface::makeblock(){
+#ifdef NETINTERFACE_USING_WINDOWS
+    int timeout = 1000;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
         destroysocket();
         return false;
     }
+#else
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 1000000;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
+        destroysocket();
+        return false;
+    }
+#endif
+}
+bool NetInterface::nonblock(){
 #ifdef NETINTERFACE_USING_WINDOWS
     int timeout = 1;
     if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
@@ -36,7 +42,25 @@ bool NetInterface::makesocket()
         return false;
     }
 #endif
+}
+bool NetInterface::makesocket()
+{
+    connection = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
+    if(connection<=0){
+        return false;
+    }
 
+    int enable = 1;
+    if (setsockopt(connection, SOL_SOCKET, SO_REUSEADDR, (char*)&enable, sizeof(int)) != 0){
+        destroysocket();
+        return false;
+    }
+
+    if(!makeblock()){
+        destroysocket();
+        return false;
+    }
+    
     return true;
     
 }

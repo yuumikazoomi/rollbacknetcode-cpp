@@ -54,14 +54,21 @@ public:
     NetInterface();
     bool makesocket();
     bool makesocketbind();
-    void destroysocket();
+    
     void poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback);
     void sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback = nullptr);
-    bool iserrornonblock();
-    int getlasterror();
+    
+    
     void setremoteaddress(const char* hostname, uint16_t port);
     
     ~NetInterface();
+private:
+    bool makeblock();
+    bool nonblock();
+    int getlasterror();
+    bool iserrornonblock();
+    void destroysocket();
+    
 };
 #endif
  
