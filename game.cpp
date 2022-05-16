@@ -95,7 +95,7 @@ void Game::update(){
                 switch (event.key.keysym.sym) {
                     case SDLK_RIGHT:{
                         directionchanged = true;
-                        directionchanged = kDirectionRight;
+                        direction = kDirectionRight;
                     }
                         break;
                     case SDLK_DOWN:{

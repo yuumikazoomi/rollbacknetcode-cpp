@@ -4,7 +4,7 @@ Entity::Entity(){
     score = 0;
     speed = 7;
     position = (Vector2){0, 0};
-    direction = kDirectionRight;
+    direction = kDirectionDown;
 }
 uint32_t Entity::getscore(){
     return score;
@@ -20,20 +20,20 @@ const Vector2 &Entity::getposition(){
 }
 void Entity::update(int time){
     switch (direction){
-    case kDirectionRight:
-        position.x += speed * time;
-        break;
-    case kDirectionDown:
-        position.y += speed * time;
-        break;
-    case kDirectionLeft:
-        position.x -= speed * time;
-        break;
-    case kDirectionUp:
-        position.y -= speed * time;
-        break;
-    default:
-        break;
+        case kDirectionRight:
+            position.x += speed * time;
+            break;
+        case kDirectionDown:
+            position.y += speed * time;
+            break;
+        case kDirectionLeft:
+            position.x -= speed * time;
+            break;
+        case kDirectionUp:
+            position.y -= speed * time;
+            break;
+        default:
+            break;
     }
 }
 uint16_t Entity::getdirection(){
