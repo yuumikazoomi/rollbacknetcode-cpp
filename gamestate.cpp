@@ -1,11 +1,9 @@
 #include <gamestate.h>
 
-GameState::GameState(bool ishost)
-{
+GameState::GameState(bool ishost){
     this->ishost = ishost;
     randomseed = 0;
-    if (ishost)
-    {
+    if (ishost){
         randomseed = std::random_device()();
     }
     rbound = 0;
@@ -17,8 +15,7 @@ GameState::GameState(bool ishost)
     timestep = 1; //fixed timestep
 }
 //simple 2d box collision check
-bool GameState::iscollidingwithobjective(Vector2 position)
-{
+bool GameState::iscollidingwithobjective(Vector2 position){
     Vector2 rect1 = position;
     Vector2 rect2 = objective;
     if (rect1.x < rect2.x + TEXTUREWIDTH &&
@@ -48,32 +45,26 @@ void GameState::entityupdate(Entity *e)
 {
     e->update(timestep);
     Vector2 epos = e->getposition();
-    if (iscollidingwithobjective(epos))
-    {
+    if (iscollidingwithobjective(epos)){
         e->incrementscore();
         spawnobjective();
     }
 
-    if (epos.x < 0)
-    {
+    if (epos.x < 0){
         e->updatedirection(kDirectionRight);
     }
-    else if (epos.x > rbound)
-    {
+    else if (epos.x > rbound){
         e->updatedirection(kDirectionLeft);
     }
-    else if (epos.y < 0)
-    {
+    else if (epos.y < 0){
         e->updatedirection(kDirectionDown);
     }
-    else if (epos.y > bbound)
-    {
+    else if (epos.y > bbound){
         e->updatedirection(kDirectionUp);
     }
 }
 
-void GameState::update()
-{
+void GameState::update(){
     entityupdate(&me);
     entityupdate(&apponent);
 
@@ -91,8 +82,7 @@ void GameState::update()
 
     statestack.push_back(state);
 
-    if (statestack.size() > 10) //max states
-    {
+    if (statestack.size() > 10){ //max states{
         statestack.pop_front();
     }
 }
@@ -100,12 +90,10 @@ void GameState::rollback(uint16_t direction, uint16_t localframe, uint16_t targe
 {
     std::deque<std::shared_ptr<GameStateAbstract> >::iterator it = statestack.end();
     uint16_t diff = localframe - targetframe;
-    if (diff > 10)
-    {
+    if (diff > 10){
         //not sure what to do here
     }
-    else
-    {
+    else{
         diff *= -1;             //just to go back in the stack (-diff)
         std::advance(it, diff); //go back x frames
 
@@ -116,8 +104,7 @@ void GameState::rollback(uint16_t direction, uint16_t localframe, uint16_t targe
         */
         //now perform rollback?
         uint16_t predicteddirection = direction;
-        while (it != statestack.end())
-        {
+        while (it != statestack.end()){
             //assign the random seed from that state
             randomseed = it->get()->randomseed;
 
@@ -174,24 +161,21 @@ void GameState::rollback(uint16_t direction, uint16_t localframe, uint16_t targe
 *localframe == our frame
 *targetframe == frame of peer when they hit input
 */
-void GameState::updatedirection(Entity *e, uint16_t direction, uint16_t localframe, uint16_t targetframe)
-{
+void GameState::updatedirection(Entity *e, uint16_t direction, uint16_t localframe, uint16_t targetframe){
 
     //if arriving frame doesn't  match our frame perform rollback
 
     e->updatedirection(direction);
 
     //we don't need to rollback our own input
-    if (e == &apponent)
-    {
+    if (e == &apponent){
 
         //used for displaying on the level
         lif.input = direction;
         lif.targetframe = targetframe;
         lif.localframe = localframe;
 
-        if (localframe > targetframe)
-        {
+        if (localframe > targetframe){
             rollback(direction, localframe, targetframe);
             //perform rollback
         }
@@ -199,42 +183,33 @@ void GameState::updatedirection(Entity *e, uint16_t direction, uint16_t localfra
 }
 
 
-Entity *GameState::getapponent()
-{
+Entity *GameState::getapponent(){
     return &apponent;
 }
-Entity *GameState::getself()
-{
+Entity *GameState::getself(){
     return &me;
 }
-uint32_t GameState::getrandomseed()
-{
+uint32_t GameState::getrandomseed(){
     return randomseed;
 }
-void GameState::setrandomseed(uint32_t randomseed)
-{
+void GameState::setrandomseed(uint32_t randomseed){
     this->randomseed = randomseed;
 }
-const Vector2 &GameState::getobjective()
-{
+const Vector2 &GameState::getobjective(){
     return objective;
 }
-void GameState::setbound(uint32_t rbound, uint32_t bbound)
-{
+void GameState::setbound(uint32_t rbound, uint32_t bbound){
     this->rbound = rbound;
     this->bbound = bbound;
 }
 
-const LastInputFrame &GameState::getlastinputframe()
-{
+const LastInputFrame &GameState::getlastinputframe(){
     return lif;
 }
-const GameStateAbstract &GameState::getlastsyncstate()
-{
+const GameStateAbstract &GameState::getlastsyncstate(){
     return lastsync;
 }
-uint32_t GameState::xorshift32(uint32_t *state)
-{
+uint32_t GameState::xorshift32(uint32_t *state){
     /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
     uint32_t x = *state;
     x ^= x << 13;

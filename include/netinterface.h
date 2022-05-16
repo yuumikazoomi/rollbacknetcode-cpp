@@ -37,8 +37,8 @@ enum NIPacketId {
 typedef struct sockaddr_in  NISockAddrIn;
 typedef struct sockaddr     NISockAddr;
 typedef struct SNIRelayPacket{
-    uint16_t header;
     uint16_t signature;
+    uint16_t packettype;
     uint16_t frame;
     uint16_t input;
 }NIRelayPacket;
@@ -53,9 +53,11 @@ public:
     bool makesocketbind();
     void destroysocket();
     void poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback);
+    void sendinput(uint16_t input,std::function<void(bool&)> callback);
     
     bool iserrornonblock();
     int getlasterror();
+
     
     ~NetInterface();
 };

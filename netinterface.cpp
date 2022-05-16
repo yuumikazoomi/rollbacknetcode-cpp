@@ -78,7 +78,8 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
     if(size == sizeof(NIRelayPacket)){
         availabledata = true;
-        if(packet.signature == NI_SIGNATURE){//simple handshake
+        if(packet.signature == NI_SIGNATURE
+           && packet.packettype == kNIHandShake){//simple handshake
             if(host){
                 //client sent a handshake
                 //save the address
@@ -91,6 +92,9 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> ca
         }
     }
     callback(packet,availabledata,error);
+}
+void NetInterface::sendinput(uint16_t input,std::function<void(bool&)> callback){
+    
 }
 bool NetInterface::iserrornonblock(){
     int error = getlasterror();
