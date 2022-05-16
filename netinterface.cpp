@@ -102,7 +102,7 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize,b
     }
     callback(packet,size,availabledata,error);
 }
-void NetInterface::sendinput(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback){
+void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback){
     NITransferSize size = sendto(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
     bool error = false;
     if(size <= 0){

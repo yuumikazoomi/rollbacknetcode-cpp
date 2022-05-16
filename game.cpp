@@ -7,8 +7,20 @@ Game::Game(bool host) : state(host),level(&state){
             //maybe show an error
         }
     }else{
-        if(!net.makesocket()){
+        if(net.makesocket()){
             net.setremoteaddress("0.0.0.0",6789);
+            //send handshake
+            NIRelayPacket packet = {0};
+            packet.signature = NI_SIGNATURE;
+            packet.packettype = kNIHandShake;
+            
+            auto cb = [this](NITransferSize size,bool error){
+                if(error){
+                    //show a  error
+                }
+            };
+            net.sendpacket(&packet,cb);
+        }else{
             //maybe show an error
         }
     }

@@ -55,7 +55,7 @@ public:
     bool makesocketbind();
     void destroysocket();
     void poll(std::function<void(const NIRelayPacket&,NITransferSize,bool&,bool&)> callback);
-    void sendinput(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback);
+    void sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize,bool&)> callback);
     bool iserrornonblock();
     int getlasterror();
     void setremoteaddress(const char* hostname, uint16_t port);

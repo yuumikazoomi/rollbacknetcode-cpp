@@ -2,7 +2,6 @@
 #define _gamestate_h
 
 #include <entity.h>
-#define GAME_SIGNATURE 0xCAFE
 
 enum InGamePacketId
 {
