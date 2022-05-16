@@ -189,7 +189,7 @@ void GameState::updatedirection(Entity *e, uint16_t direction,uint16_t targetfra
         
         
         if (framecount > targetframe){
-            rollback(direction, targetframe);
+           // rollback(direction, targetframe);
             //perform rollback
         }
     }

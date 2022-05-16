@@ -9,6 +9,7 @@ enum InGamePacketId
     kNoInput = 0,
     kSeed,
     kProvidedInput,
+    kProvidedNoInput
 };
 typedef struct SOutOfOrderInputStorage{
     uint16_t input;

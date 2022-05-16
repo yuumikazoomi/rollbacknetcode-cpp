@@ -70,6 +70,12 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             state.updatedirection(state.getapponent(),input,frame);
         }
             break;
+        case kProvidedNoInput:{
+            uint16_t frame = getlowtwo(packet.extra);
+            
+            //user sent no input on frame x
+        }
+            break;
         default:
             break;
     }
@@ -131,6 +137,15 @@ void Game::update(){
             
             //make the packet
             sethightwo(&packet.extra,state.getself()->getdirection());
+            setlowtwo(&packet.extra,state.getframecount());
+            
+            //send the packet
+            net.sendpacket(&packet);
+        }else{
+            //send no input packet
+            NIRelayPacket packet = {0};
+            packet.packettype = kProvidedNoInput;
+            packet.signature = NI_SIGNATURE;
             setlowtwo(&packet.extra,state.getframecount());
             
             //send the packet
