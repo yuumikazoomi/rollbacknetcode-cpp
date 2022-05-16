@@ -42,10 +42,9 @@ typedef struct sockaddr     NISockAddr;
 typedef struct SNIRelayPacket{
     uint16_t signature;
     uint16_t packettype;
-    uint16_t frame;
-    uint16_t input;
-    uint64_t extra;
+    uint32_t extra;
 }NIRelayPacket;
+void printpacket(const NIRelayPacket& p);
 class NetInterface{
 private:
     NISocket connection;
@@ -64,10 +63,10 @@ public:
     
     ~NetInterface();
 private:
-    /*
+    
      bool makeblock();
      bool nonblock();
-     */
+     
     
     int getlasterror();
     bool iserrornonblock();

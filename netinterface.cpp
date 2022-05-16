@@ -1,6 +1,15 @@
 
 #include <netinterface.h>
-
+void printpacket(const NIRelayPacket& p){
+    printf("signature:%x\n",p.signature);
+    printf("packettype:%x\n",p.packettype);
+    printf("extra:%x\n",p.extra);
+}
+void printpacket(NIRelayPacket* p){
+    printf("signature:%x\n",p->signature);
+    printf("packettype:%x\n",p->packettype);
+    printf("extra:%x\n",p->extra);
+}
 NetInterface::NetInterface()
 {
 #ifdef NETINTERFACE_USING_WINDOWS
@@ -9,44 +18,44 @@ NetInterface::NetInterface()
 #endif
     memset(&peeraddress,0,sizeof(NISockAddrIn));
 }
-/*
- bool NetInterface::makeblock(){
- #ifdef NETINTERFACE_USING_WINDOWS
- int timeout = 5000;
- if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
- destroysocket();
- return false;
- }
- #else
- struct timeval tv;
- tv.tv_sec = 0;
- tv.tv_usec = 5000000;
- if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
- destroysocket();
- return false;
- }
- #endif
- return true;
- }
- bool NetInterface::nonblock(){
- #ifdef NETINTERFACE_USING_WINDOWS
- int timeout = 1;
- if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
- destroysocket();
- return false;
- }
- #else
- struct timeval tv;
- tv.tv_sec = 0;
- tv.tv_usec = 1000;
- if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
- destroysocket();
- return false;
- }
- #endif
- return true;
- }
- */
+
+bool NetInterface::makeblock(){
+#ifdef NETINTERFACE_USING_WINDOWS
+    int timeout = 5000;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
+        destroysocket();
+        return false;
+    }
+#else
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 5000000;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
+        destroysocket();
+        return false;
+    }
+#endif
+    return true;
+}
+bool NetInterface::nonblock(){
+#ifdef NETINTERFACE_USING_WINDOWS
+    int timeout = 1;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO, (char*)&timeout, sizeof(int)) != 0){
+        destroysocket();
+        return false;
+    }
+#else
+    struct timeval tv;
+    tv.tv_sec = 0;
+    tv.tv_usec = 1000;
+    if (setsockopt(connection, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) != 0) {
+        destroysocket();
+        return false;
+    }
+#endif
+    return true;
+}
+
 bool NetInterface::makesocket()
 {
     connection = socket(AF_INET,SOCK_DGRAM,IPPROTO_UDP);
@@ -68,6 +77,7 @@ bool NetInterface::makesocket()
      fcntl(connection, F_SETFL, flags | O_NONBLOCK);
      #endif
      */
+    nonblock();
     return true;
     
 }
@@ -113,18 +123,21 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     NISockAddrIn address = {0};
     NISockAddrSize sizeofaddress = sizeof(NISockAddrIn);
     
-    fd_set  fdread;
-    FD_ZERO(&fdread);
-    FD_SET(connection, &fdread);
-    struct timeval wait = {0};
-    wait.tv_usec = 1000;
-    int ret = select(connection+1,&fdread,NULL,NULL,&wait);
-    if(ret<=0){
-        return;
-    }
-    
+    /*
+     fd_set  fdread;
+     FD_ZERO(&fdread);
+     FD_SET(connection, &fdread);
+     struct timeval wait = {0};
+     wait.tv_usec = 1000;
+     int ret = select(connection+1,&fdread,NULL,NULL,&wait);
+     if(ret<=0){
+     return;
+     }
+     */
     NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
-    if(size>0){
+    
+    if(size==sizeof(NIRelayPacket)){
+        printpacket(packet);
         if(packet.signature == NI_SIGNATURE
            && packet.packettype == kNIHandShake){//simple handshake
             //client sent a handshake
@@ -140,14 +153,15 @@ void NetInterface::poll(std::function<void(const NIRelayPacket&,NITransferSize)>
     
 }
 void NetInterface::sendpacket(NIRelayPacket* packet,std::function<void(NITransferSize)> callback){
-    //WAIT DID WE SET THE SIZE CORRECLTY?!!
-    NITransferSize size = sendto(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
+    printpacket(packet);
+    NITransferSize size = sendto(connection,(char*)packet,sizeof(NIRelayPacket),0,(NISockAddr*)&peeraddress,sizeofpeeraddress);
     if(size < 0){
-        printf("size is less than or equal to 0\n");
         if(!iserrornonblock()){
         }
     }else{
-        
+        NIRelayPacket p = {0};
+        memcpy(&p,packet,sizeof(NIRelayPacket));
+        printpacket(p);
         if(callback!=nullptr){
             callback(size);
         }

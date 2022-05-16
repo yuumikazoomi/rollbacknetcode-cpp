@@ -1,5 +1,6 @@
 
 #include <game.h>
+
 Game::Game(bool host) : state(host),level(&state){
     this->host = host;
     if(host){
@@ -8,20 +9,23 @@ Game::Game(bool host) : state(host),level(&state){
         }
     }else{
         if(net.makesocket()){
-            printf("made socket\n");
             net.setremoteaddress("0.0.0.0",6789);
             //send handshake
             NIRelayPacket packet = {0};
             packet.signature = NI_SIGNATURE;
             packet.packettype = kNIHandShake;
-            auto t = [this](NITransferSize size){
+            
+            
+            auto t = [this,packet](NITransferSize size){
                 if(size == sizeof(NIRelayPacket)){
                     printf("sent handshake\n");
+                    printpacket(packet);
                 }else{
-                    printf("sent:%d\n",size);
                 }
                 
             };
+            
+            
             net.sendpacket(&packet,t);
         }else{
             //maybe show an error
@@ -29,6 +33,7 @@ Game::Game(bool host) : state(host),level(&state){
     }
     
 }
+
 void Game::update(){
     //check input
     SDL_Event event;
@@ -43,9 +48,11 @@ void Game::update(){
     
     //check network
     auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
+        printf("We got data:%d\n",size);
+        printpacket(packet);
         switch (packet.packettype) {
             case kNIHandShake:{
-                
+                printf("we got a handshake\n");
                 //send them our seed
                 uint32_t seed = state.getrandomseed();
                 
