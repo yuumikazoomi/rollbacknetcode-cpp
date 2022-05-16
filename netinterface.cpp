@@ -68,6 +68,10 @@ void NetInterface::destroysocket()
 #endif
 }
 void NetInterface::poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback){
+    NIRelayPacket packet = {0};
+    NISockAddrIn address = {0};
+    NISockAddrSize sizeofaddress= sizeof(NISockAddrIn);
+    NITransferSize size = recvfrom(connection,(char*)&packet,sizeof(NIRelayPacket),0,(NISockAddr*)&address,&sizeofaddress);
     
 }
 NetInterface::~NetInterface()

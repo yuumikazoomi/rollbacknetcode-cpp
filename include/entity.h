@@ -36,6 +36,5 @@ public:
     uint16_t getdirection();
     void updatedirection(int directon);
     void forcesetposition(const Vector2& position);
-
 };
 #endif

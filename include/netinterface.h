@@ -14,14 +14,19 @@
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <ws2tcpip.h>
-typedef SOCKET NISocket;
+typedef SOCKET  NISocket;
+typedef int     NITransferSize;
+typedef int     NISockAddrSize;
 #else
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
 #include <unistd.h>
-typedef int NISocket;
+typedef int         NISocket;
+typedef size_t      NITransferSize;
+typedef socklen_t   NISockAddrSize;
 #endif
+
 #include <string.h>
 #include <functional>
 #define NI_SIGNATURE 0xDEAD
@@ -48,7 +53,6 @@ public:
     void destroysocket();
     void poll(std::function<void(const NIRelayPacket&,bool&,bool&)> callback);
     ~NetInterface();
-    
 };
 #endif
  
