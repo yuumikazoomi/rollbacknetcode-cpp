@@ -54,8 +54,11 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             break;
         case kProvidedInput:{
             /*
+             *            four byte packet
+             *
+             *        high              low
              *      two bytes         two bytes
-             *        frame             input
+             *        input             frame
              * | - - - - - - - - | - - - - - - - - |
              */
             uint16_t frame = getlowtwo(packet.extra);
@@ -104,12 +107,19 @@ void Game::update(){
     
     //check network
     auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size){
+        //handle pckets
         handlepacket(packet,size);
     };
     net.poll(netcallback);
     
+    //send input to peer
     if(directionchanged){
-        //send direction to peer
+        NIRelayPacket packet = {0};
+        packet.packettype = kProvidedInput;
+        packet.signature = NI_SIGNATURE;
+        sethightwo(&packet.extra,state.getself()->getdirection());
+        setlowtwo(&packet.extra,state.getframecount());
+        net.sendpacket(&packet);
     }
     
     

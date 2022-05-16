@@ -217,6 +217,9 @@ const LastInputFrame &GameState::getlastinputframe(){
 const GameStateAbstract &GameState::getlastsyncstate(){
     return lastsync;
 }
+uint16_t GameState::getframecount(){
+    return framecount;
+}
 uint32_t GameState::xorshift32(uint32_t *state){
     /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
     uint32_t x = *state;
