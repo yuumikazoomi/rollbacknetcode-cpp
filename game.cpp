@@ -67,10 +67,10 @@ void Game::update(){
     //check network
     
     //we're going to save this so later we can call update on the input
-    NIRelayPacket peerinput = {0};
     
     
-    auto netcallback = [this,peerinput](const NIRelayPacket& packet,NITransferSize size) mutable {
+    
+    auto netcallback = [this](const NIRelayPacket& packet,NITransferSize size) mutable {
         //handle pckets
         handlepacket(packet,size);
         
@@ -78,9 +78,8 @@ void Game::update(){
         if(packet.packettype == kProvidedInput){
             //save the peers input and later call update on it
             if(packet.extra!=0){
-                printf("%x\n",packet.extra);
             }
-            memcpy(&peerinput,&packet,sizeof(NIRelayPacket));
+            memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
         }
     };
     net.poll(netcallback);
@@ -153,11 +152,10 @@ void Game::update(){
          *        input             frame
          * | - - - - - - - - | - - - - - - - - |
          */
+        //get the peer's input we took earlier from network callback and
+        //grab input and frame 
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
-        if(apponentinput!=0){
-            printf("%d\n",apponentinput);
-        }
         //update gamestate with both our input and peer's input
         state.update(myinput,apponentinput);
         

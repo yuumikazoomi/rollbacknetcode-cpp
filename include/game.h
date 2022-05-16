@@ -9,6 +9,7 @@ private:
     bool host;
     bool processing;
     uint16_t currentframe;
+    NIRelayPacket peerinput;
 public:
     Game(bool host);
     void update();
