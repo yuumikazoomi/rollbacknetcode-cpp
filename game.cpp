@@ -70,6 +70,7 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
         }
             break;
         case kProvidedInput:{
+            //ave the peers packet so later in the frame we can grab their input and framenumber
             memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
         }
             break;
@@ -128,6 +129,7 @@ void Game::update(){
     }
     if(processing){
         
+        //send packet even if no input was provided, use input value == 0
         NIRelayPacket packet = {0};
         packet.packettype = kProvidedInput;
         packet.signature = NI_SIGNATURE;
@@ -153,9 +155,10 @@ void Game::update(){
         if(mPrevLocalInputs.size() > 30){//30 local inputs is a safe bet
             
             mPrevLocalInputs.pop_front();
-            
         }
 
+        
+        
         /*
          *            four byte packet
          *
