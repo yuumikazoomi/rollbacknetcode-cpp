@@ -8,6 +8,7 @@ Game::Game(bool host) : level(&mCurrentState){
     
     if(host){
         mCurrentState.generaterandomseed();
+        
         //make a binding socket
         if(!net.makesocketbind()){
             //maybe show an error
@@ -56,6 +57,8 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             
             net.sendpacket(&outgoing);
             
+            //spawn the objective
+            mCurrentState.spawnobjective();
             //begin gameplay
             processing = true;
         }
@@ -64,6 +67,9 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             processing = true;
             uint32_t seed = (uint32_t)packet.extra;
             mCurrentState.setrandomseed(seed);
+            
+            //spawn the objective
+            mCurrentState.spawnobjective();
         }
             break;
         case kProvidedInput:{
@@ -176,7 +182,7 @@ void Game::update(){
         
         
         //perform rollback?
-        rollback(apponentinput,apponentframe);
+        //rollback(apponentinput,apponentframe);
     }
 }
 void Game::rollback(uint16_t input, uint16_t targetframe)

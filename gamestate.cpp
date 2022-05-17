@@ -60,6 +60,8 @@ void GameState::update(uint16_t myinput,uint16_t apponentinput){
     apponent.update(apponentinput,timestep);
     
     //get our position and check if we're touching objective
+    
+    
     Vector2 epos = me.getposition();
     if (iscollidingwithobjective(epos)){
         me.incrementscore();
