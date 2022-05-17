@@ -208,7 +208,6 @@ void Game::update(){
     }else{
         processing = true;
     }
-    sleep(5);
 }
 void Game::rollback(uint16_t input, uint16_t targetframe)
 {
