@@ -16,6 +16,9 @@ int main(int argc, char* argv[])
      *Change this depending on whether you're host or not
      */
     bool host = true;
+    
+    //if we provide a command line argument we can get assigned client
+    //beats recompiling every time with host == true and host == false
 #ifdef NETINTERFACE_USING_BSD
     if(argc>1){
         host = false;
