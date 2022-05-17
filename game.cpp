@@ -97,6 +97,34 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             //ave the peers packet so later in the frame we can grab their input and framenumber
             memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
             
+            uint16_t tframe = getlowtwo(peerinput.extra);
+            uint16_t gframe = mLastSyncInfo.mState.getframenumber();
+            if(tframe<gframe){
+                //ignore this packet, it probably arrived late
+            }else if (tframe == gframe){
+                //we got a frame match, do a rollback
+                uint16_t tinput = gethightwo(peerinput.extra);
+                
+                rollback(tinput,tframe);
+            }else{
+                
+                //check if the list contains a frame that matches gframe
+                for(const NIRelayPacket& inlist : packetlist){
+                    uint16_t inlistframe = getlowtwo(inlist.extra);
+                    uint16_t inlistinput = gethightwo(inlist.extra);
+                    if(inlistframe == gframe){
+                        rollback(inlistframe,inlistinput);
+                        //remove this packet from the list
+                        packetlist.erase(inlist);
+                        break;
+                    }
+                }
+                
+                //add our current arrived packet to the list
+                packetlist.insert(peerinput);
+               // printf("packetlist size:%d\n",packetlist.size());
+            }
+            
         }
             break;
         default:
@@ -196,17 +224,22 @@ void Game::update(){
         //grab input and frame
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
-        printf("apponent frame:%d\tsync frame:%d\n",apponentframe,mLastSyncInfo.mState.getframenumber());
         
         //update gamestate with both our input and peer's input
         mCurrentState.update(myinput,apponentinput);
         
         
-        
+        /*
         //perform rollback?
         if(peerinput.packettype == kProvidedInput){
-            rollback(apponentinput,apponentframe);
+            //we don't need to process a frame if apponent frame is behind the sync frame
+            if(apponentframe==mLastSyncInfo.mState.getframenumber()){
+            
+                rollback(apponentinput,apponentframe);
+            }
+            
         }
+         */
         
 
     }
