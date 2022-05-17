@@ -12,12 +12,17 @@ Game::Game(bool host) : level(&mCurrentState){
         //make a binding socket
         if(!net.makesocketbind()){
             //maybe show an error
+        }else{
+            PLOGD << "host socked created"  ;
         }
     }else{
         if(net.makesocket()){
             //send handshake
             //in return we'll receive a random seed
             net.setremoteaddress("127.0.0.1",6789);
+            
+            PLOGD << "client socked created"  ;
+            
             
             NIRelayPacket packet = {0};
             packet.signature = NI_SIGNATURE;
@@ -26,7 +31,7 @@ Game::Game(bool host) : level(&mCurrentState){
             
             auto t = [this,packet](NITransferSize size){
                 if(size == sizeof(NIRelayPacket)){
-                    
+                    PLOGD << "sent handshake"  ;
                 }else{
                 }
                 
@@ -34,6 +39,7 @@ Game::Game(bool host) : level(&mCurrentState){
             
             
             net.sendpacket(&packet,t);
+            
         }else{
             //maybe show an error
         }
@@ -47,6 +53,7 @@ Game::Game(bool host) : level(&mCurrentState){
 void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
     switch (packet.packettype) {
         case kNIHandShake:{
+            PLOGD << "received handshake"  ;
             //send them our seed
             uint32_t seed = mCurrentState.getrandomseed();
             
@@ -56,20 +63,30 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             outgoing.extra = seed;
             
             net.sendpacket(&outgoing);
-            
+            PLOGD << "sent random seed " << seed ;
             //spawn the objective
             mCurrentState.spawnobjective();
+            
+            PLOGD << "Spawning objective and beginning play " << seed ;
             //begin gameplay
             processing = true;
         }
             break;
         case kSeed:{
             processing = true;
+            
             uint32_t seed = (uint32_t)packet.extra;
+            
+            PLOGD << "received random seed " << seed ;
+            
             mCurrentState.setrandomseed(seed);
             
+            
+            PLOGD << "Spawning objective and beginning play " << seed ;
             //spawn the objective
             mCurrentState.spawnobjective();
+            
+            
         }
             break;
         case kProvidedInput:{
@@ -208,6 +225,7 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
     //mCurrentState = mLastSyncInfo.mState;
     
     //corrected
+    
     memcpy(&mCurrentState,&mLastSyncInfo.mState,sizeof(GameState));
     
     
@@ -225,6 +243,8 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
         //corrected
         
         //this line is broken and causes a crash
+        PLOGD << "calling update on rollbacked state ";
+        PLOGD << "input at index " << currentFrame - mCurrentState.getframenumber() ;
         mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()), input);
         
         

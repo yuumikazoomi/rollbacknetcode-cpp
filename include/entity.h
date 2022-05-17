@@ -8,6 +8,9 @@
 #include <memory>
 #include <vector>
 #include <netinterface.h>
+#include <plog/Log.h> 
+#include "plog/Initializers/RollingFileInitializer.h"
+
 enum Direction{
     kInputNone = 0,
     kInputRight = 1,
