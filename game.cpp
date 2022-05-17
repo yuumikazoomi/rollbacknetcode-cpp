@@ -10,7 +10,7 @@ Game::Game(bool host) : level(&mCurrentState){
     this->host = host;
     
     memset(&mLastSyncInfo,0,sizeof(LastSyncInfo));
-    
+    memset(&peerinput,0,sizeof(NIRelayPacket));
     if(host){
         mCurrentState.generaterandomseed();
         
@@ -92,8 +92,6 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             //ave the peers packet so later in the frame we can grab their input and framenumber
             memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
             
-            
-            //packetlist.insert(this->peerinput);
         }
             break;
         default:
@@ -193,7 +191,7 @@ void Game::update(){
         //grab input and frame
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
-        
+        printf("apponent frame:%d\tsync frame:%d\n",apponentframe,mLastSyncInfo.mState.getframenumber());
         
         //update gamestate with both our input and peer's input
         mCurrentState.update(myinput,apponentinput);
@@ -201,7 +199,7 @@ void Game::update(){
         
         
         //perform rollback?
-        //rollback(apponentinput,apponentframe);
+        rollback(apponentinput,apponentframe);
         
 
     }
@@ -210,6 +208,7 @@ void Game::update(){
     }else{
         processing = true;
     }
+    sleep(5);
 }
 void Game::rollback(uint16_t input, uint16_t targetframe)
 {
