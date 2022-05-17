@@ -3,6 +3,13 @@
 
 #include <entity.h>
 
+
+
+#define TEXTUREWIDTH 32
+#define TEXTUREHEIGHT 32
+
+
+
 enum InGamePacketId
 {
     kNothing = 0,
@@ -12,22 +19,26 @@ enum InGamePacketId
     kProvidedNoInput
 };
 
-#define TEXTUREWIDTH 32
-#define TEXTUREHEIGHT 32
+
 class GameState{
+
 private:
+    uint16_t mFrameNumber;
     
     Entity me;
     Entity apponent;
     Vector2 objective;
     uint32_t randomseed;
+    
+    
+    
     bool ishost;
-
+    
     uint32_t rbound;
     uint32_t bbound;
     int timestep;
 public:
-    GameState(bool ishost);
+    GameState();
     void update(uint16_t myinput,uint16_t apponentinput);
     Entity* getself();
     Entity* getapponent();
@@ -42,5 +53,9 @@ public:
     uint32_t xorshift32(uint32_t *state);
     
     bool gethost();
+    
+    uint16_t getframenumber();
+
+    void generaterandomseed();
 };
 #endif

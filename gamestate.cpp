@@ -1,18 +1,27 @@
  #include <gamestate.h>
 
-GameState::GameState(bool ishost){
+GameState::GameState(){
     this->ishost = ishost;
+    
+    mFrameNumber = 0;
+    
     randomseed = 0;
-    if (ishost){
-        randomseed = std::random_device()();
-    }
+
     rbound = 1080;
     bbound = 720;
+    
     objective.x = 0;
     objective.y = 0;
 
     timestep = 1; //fixed timestep
 }
+
+
+void GameState::generaterandomseed(){
+    randomseed = std::random_device()();
+}
+
+
 //simple 2d box collision check
 bool GameState::iscollidingwithobjective(Vector2 position){
     Vector2 rect1 = position;
@@ -30,6 +39,8 @@ bool GameState::iscollidingwithobjective(Vector2 position){
     }
 }
 
+
+
 void GameState::spawnobjective()
 {
     uint16_t x = xorshift32(&randomseed);
@@ -39,6 +50,9 @@ void GameState::spawnobjective()
     objective.x = x;
     objective.y = y;
 }
+
+
+
 
 void GameState::update(uint16_t myinput,uint16_t apponentinput){
     
@@ -59,7 +73,13 @@ void GameState::update(uint16_t myinput,uint16_t apponentinput){
         apponent.incrementscore();
         spawnobjective();
     }
+    
+    
+    //update our framenumber
+    ++mFrameNumber;
 }
+
+
 
 Entity *GameState::getapponent(){
     return &apponent;
@@ -80,6 +100,9 @@ void GameState::setbound(uint32_t rbound, uint32_t bbound){
     this->rbound = rbound;
     this->bbound = bbound;
 }
+uint16_t GameState::getframenumber(){
+    return mFrameNumber;
+}
 
 uint32_t GameState::xorshift32(uint32_t *state){
     /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */
@@ -89,7 +112,4 @@ uint32_t GameState::xorshift32(uint32_t *state){
     x ^= x << 5;
     *state = x;
     return x;
-}
-bool GameState::gethost(){
-    return ishost;
 }

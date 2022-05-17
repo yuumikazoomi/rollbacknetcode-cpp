@@ -1,18 +1,26 @@
 
 #include <game.h>
 
-Game::Game(bool host) : state(host),level(&state){
+Game::Game(bool host) : level(&mCurrentState){
     this->host = host;
-    currentframe = 0;
+    
+    memset(&mLastSyncInfo,0,sizeof(LastSyncInfo));
+    
+    memset(&mCurrentState,0,sizeof(LastSyncInfo));
+    
     
     if(host){
+        mCurrentState.generaterandomseed();
+        //make a binding socket
         if(!net.makesocketbind()){
             //maybe show an error
         }
     }else{
         if(net.makesocket()){
-            net.setremoteaddress("127.0.0.1",6789);
             //send handshake
+            //in return we'll receive a random seed
+            net.setremoteaddress("127.0.0.1",6789);
+            
             NIRelayPacket packet = {0};
             packet.signature = NI_SIGNATURE;
             packet.packettype = kNIHandShake;
@@ -32,6 +40,9 @@ Game::Game(bool host) : state(host),level(&state){
             //maybe show an error
         }
     }
+    
+    
+    
     processing = false;
     
 }
@@ -39,7 +50,7 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
     switch (packet.packettype) {
         case kNIHandShake:{
             //send them our seed
-            uint32_t seed = state.getrandomseed();
+            uint32_t seed = mCurrentState.getrandomseed();
             
             NIRelayPacket outgoing = {0};
             outgoing.packettype = kSeed;
@@ -55,7 +66,7 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
         case kSeed:{
             processing = true;
             uint32_t seed = (uint32_t)packet.extra;
-            state.setrandomseed(seed);
+            mCurrentState.setrandomseed(seed);
         }
             break;
         case kProvidedInput:{
@@ -131,7 +142,7 @@ void Game::update(){
          * | - - - - - - - - | - - - - - - - - |
          */
         sethightwo(&packet.extra,myinput);
-        setlowtwo(&packet.extra,currentframe);
+        setlowtwo(&packet.extra,mCurrentState.getframenumber());
         
         
         
@@ -152,13 +163,69 @@ void Game::update(){
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
         //update gamestate with both our input and peer's input
-        state.update(myinput,apponentinput);
+        mCurrentState.update(myinput,apponentinput);
         
-        ++currentframe;
     }
+}
+void Game::rollback(uint16_t input, uint16_t targetframe)
+{
+    //This input must be for the last sync state. E.g. if the last known enemy input was on 26
+    // then the last sync state is frame 27. So we need the input for frame 27 to continue.
+    
+    //corrected
+    //C_ASSERT(targetframe == mLastSyncInfo.mState.getframenumber());
+    
+    assert(targetframe == mLastSyncInfo.mState.getframenumber());
+
+    //Calculate diff
     
     
+    //size_t currentFrame = mCurrentState.mCurrentFrame;
     
+    //corrected
+    uint16_t currentFrame = mCurrentState.getframenumber();
+    
+    //Rollback our state
+    
+    //mCurrentState = mLastSyncInfo.mState;
+    
+    //corrected
+    memcpy(&mCurrentState,&mLastSyncInfo.mState,sizeof(GameState));
+    
+    
+    bool firstUpdateInLoop = true;
+
+    //Rollforward with the new info
+    while (mCurrentState.getframenumber() <= currentFrame)
+    {
+        
+        //I don't understand this because update takes two arguments, our input and apponent input
+        //let me make an adjustment
+        //I believe you meant to write "input" from the argument above
+  
+        //mCurrentState.update(mPrevLocalInputs[currentFrame - mCurrentState.mCurrentFrame], direction);
+        //corrected
+        mCurrentState.update(mPrevLocalInputs[currentFrame - mCurrentState.getframenumber()], input);
+        
+        
+        if (firstUpdateInLoop)
+        {
+            //After the first roll forward, update sync state
+            //memcpy instead
+            
+            //mLastSyncInfo.mState = mCurrentState;
+            //corrected
+            memcpy(&mLastSyncInfo.mState,&mCurrentState,sizeof(GameState));
+            
+            //ambiguity use Input instead of Direction
+            
+            //mLastSyncInfo.mOpponentDirection = direction;
+            //corrected
+            mLastSyncInfo.mOpponentInput = input;
+            
+            firstUpdateInLoop = false;
+        }
+    }
 }
 void Game::draw(SDL_Renderer* renderer){
     level.draw(renderer);
