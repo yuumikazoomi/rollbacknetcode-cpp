@@ -9,6 +9,9 @@ bool operator<(const NIRelayPacket &a, const NIRelayPacket &b)
 Game::Game(bool host) : level(&mCurrentState){
     this->host = host;
     
+    //set this to true once handshake and seeds are shared
+    connected = false;
+    
     memset(&mLastSyncInfo,0,sizeof(LastSyncInfo));
     memset(&peerinput,0,sizeof(NIRelayPacket));
     if(host){
@@ -70,6 +73,7 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             memcpy(&mLastSyncInfo.mState,&mCurrentState,sizeof(GameState));
             
             processing = true;
+            connected = true;
         }
             break;
         case kSeed:{
@@ -86,6 +90,7 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             
             
             processing = true;
+            connected = true;
         }
             break;
         case kProvidedInput:{
@@ -205,7 +210,7 @@ void Game::update(){
     }
     if (mCurrentState.getframenumber() - mLastSyncInfo.mState.getframenumber() > MAX_SYNC_DRIFT){
         processing = false;
-    }else{
+    }else if(connected){
         processing = true;
     }
 }
@@ -249,7 +254,7 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
         //corrected
         
         //this line is broken and causes a crash
-       // mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()-1), input);
+        mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()-1), input);
         
         
         if (firstUpdateInLoop)

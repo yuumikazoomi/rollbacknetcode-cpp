@@ -25,6 +25,9 @@ private:
     
     bool processing;
     
+    //once handshake and seeds are shared we set this to true
+    bool connected;
+    
     //last packed arrived by the peer just so we can update it in our update function
     NIRelayPacket peerinput;
     
@@ -39,6 +42,8 @@ private:
     GameState mCurrentState;
 
     std::set<NIRelayPacket> packetlist;
+    
+    
 public:
         
     
