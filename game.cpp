@@ -217,10 +217,10 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
     while (mCurrentState.getframenumber() <= currentFrame)
     {
         
-        //I don't understand this because update takes two arguments, our input and apponent input
-        //let me make an adjustment
+        
         //I believe you meant to write "input" from the argument above
-  
+        //let me make an adjustment
+        
         //mCurrentState.update(mPrevLocalInputs[currentFrame - mCurrentState.mCurrentFrame], direction);
         //corrected
         
