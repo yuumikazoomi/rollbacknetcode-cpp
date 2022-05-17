@@ -144,12 +144,18 @@ void Game::update(){
         sethightwo(&packet.extra,myinput);
         setlowtwo(&packet.extra,mCurrentState.getframenumber());
         
-        
-        
         //send packet
         net.sendpacket(&packet);
         
-        //update
+        //put our own input into double ended que
+        mPrevLocalInputs.push_back(myinput);
+        
+        if(mPrevLocalInputs.size() > 30){//30 local inputs is a safe bet
+            
+            mPrevLocalInputs.pop_front();
+            
+        }
+
         /*
          *            four byte packet
          *
@@ -162,9 +168,15 @@ void Game::update(){
         //grab input and frame
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
+        
+        
         //update gamestate with both our input and peer's input
         mCurrentState.update(myinput,apponentinput);
         
+        
+        
+        //perform rollback?
+        rollback(apponentinput,apponentframe);
     }
 }
 void Game::rollback(uint16_t input, uint16_t targetframe)
@@ -205,7 +217,9 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
   
         //mCurrentState.update(mPrevLocalInputs[currentFrame - mCurrentState.mCurrentFrame], direction);
         //corrected
-        mCurrentState.update(mPrevLocalInputs[currentFrame - mCurrentState.getframenumber()], input);
+        
+        //this line is broken should it be currentFrame - mCurrentState.getframenumber() - 1?
+        mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()), input);
         
         
         if (firstUpdateInLoop)
