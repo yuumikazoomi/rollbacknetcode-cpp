@@ -1,6 +1,9 @@
 
 #include <game.h>
-
+bool operator<(const NIRelayPacket &a, const NIRelayPacket &b)
+{
+    return a.extra < b.extra;
+}
 Game::Game(bool host) : level(&mCurrentState){
     this->host = host;
     
@@ -75,6 +78,9 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
         case kProvidedInput:{
             //ave the peers packet so later in the frame we can grab their input and framenumber
             memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
+            
+            
+            //packetlist.insert(this->peerinput);
         }
             break;
         default:
@@ -153,11 +159,11 @@ void Game::update(){
         net.sendpacket(&packet);
         
         //put our own input into double ended que
-        mPrevLocalInputs.push_back(myinput);
+        mPrevLocalInputs.push_front(myinput);
         
         if(mPrevLocalInputs.size() > 30){//30 local inputs is a safe bet
             
-            mPrevLocalInputs.pop_front();
+            mPrevLocalInputs.pop_back();
         }
 
         
@@ -182,7 +188,14 @@ void Game::update(){
         
         
         //perform rollback?
-        rollback(apponentinput,apponentframe);
+        //rollback(apponentinput,apponentframe);
+        
+
+    }
+    if (mCurrentState.getframenumber() - mLastSyncInfo.mState.getframenumber() > MAX_SYNC_DRIFT){
+        processing = false;
+    }else{
+        processing = true;
     }
 }
 void Game::rollback(uint16_t input, uint16_t targetframe)
@@ -214,7 +227,7 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
     bool firstUpdateInLoop = true;
 
     //Rollforward with the new info
-    while (mCurrentState.getframenumber() <= currentFrame)
+    while (mCurrentState.getframenumber() < currentFrame)
     {
         
         
@@ -225,7 +238,7 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
         //corrected
         
         //this line is broken and causes a crash
-        mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()), input);
+       // mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()-1), input);
         
         
         if (firstUpdateInLoop)

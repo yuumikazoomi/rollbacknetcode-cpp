@@ -2,6 +2,7 @@
 #define _game_h
 #include <stage.h>
 
+#define MAX_SYNC_DRIFT 10
 
 typedef struct SLastSyncInfo
 {
@@ -37,6 +38,7 @@ private:
     
     GameState mCurrentState;
 
+    std::set<NIRelayPacket> packetlist;
 public:
         
     
