@@ -2,7 +2,9 @@
 #include <game.h>
 bool operator<(const NIRelayPacket &a, const NIRelayPacket &b)
 {
-    return a.extra < b.extra;
+    uint16_t aframe = getlowtwo(a.extra);
+    uint16_t bframe = getlowtwo(b.extra);
+    return aframe < bframe;
 }
 Game::Game(bool host) : level(&mCurrentState){
     this->host = host;
