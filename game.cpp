@@ -63,16 +63,27 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             //spawn the objective
             mCurrentState.spawnobjective();
             //begin gameplay
+            
+            //initialise mLastSyncInfo to the current game state as host
+            memcpy(&mLastSyncInfo.mState,&mCurrentState,sizeof(GameState));
+            
             processing = true;
         }
             break;
         case kSeed:{
-            processing = true;
+            
+            
             uint32_t seed = (uint32_t)packet.extra;
             mCurrentState.setrandomseed(seed);
             
             //spawn the objective
             mCurrentState.spawnobjective();
+            
+            //initialise mLastSyncInfo to the current game state as client
+            memcpy(&mLastSyncInfo.mState,&mCurrentState,sizeof(GameState));
+            
+            
+            processing = true;
         }
             break;
         case kProvidedInput:{
