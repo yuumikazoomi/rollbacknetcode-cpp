@@ -224,7 +224,7 @@ void Game::rollback(uint16_t input, uint16_t targetframe)
         //mCurrentState.update(mPrevLocalInputs[currentFrame - mCurrentState.mCurrentFrame], direction);
         //corrected
         
-        //this line is broken should it be currentFrame - mCurrentState.getframenumber() - 1?
+        //this line is broken and causes a crash
         mCurrentState.update(mPrevLocalInputs.at(currentFrame - mCurrentState.getframenumber()), input);
         
         
