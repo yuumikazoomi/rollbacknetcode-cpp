@@ -98,7 +98,9 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             memcpy(&this->peerinput,&packet,sizeof(NIRelayPacket));
             
             uint16_t tframe = getlowtwo(peerinput.extra);
+           
             uint16_t gframe = mLastSyncInfo.mState.getframenumber();
+            
             if(tframe<gframe){
                 //ignore this packet, it probably arrived late
             }else if (tframe == gframe){
@@ -114,7 +116,9 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
                     uint16_t inlistinput = gethightwo(inlist.extra);
                     if(inlistframe == gframe){
                         rollback(inlistframe,inlistinput);
+                       
                         //remove this packet from the list
+                        
                         packetlist.erase(inlist);
                         break;
                     }
