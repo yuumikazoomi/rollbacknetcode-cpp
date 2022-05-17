@@ -204,7 +204,9 @@ void Game::update(){
         
         
         //perform rollback?
-        rollback(apponentinput,apponentframe);
+        if(peerinput.packettype == kProvidedInput){
+            rollback(apponentinput,apponentframe);
+        }
         
 
     }
