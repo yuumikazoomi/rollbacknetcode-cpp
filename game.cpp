@@ -182,7 +182,7 @@ void Game::update(){
         
         
         //perform rollback?
-        //rollback(apponentinput,apponentframe);
+        rollback(apponentinput,apponentframe);
     }
 }
 void Game::rollback(uint16_t input, uint16_t targetframe)
