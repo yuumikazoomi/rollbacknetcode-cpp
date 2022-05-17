@@ -1,7 +1,6 @@
  #include <gamestate.h>
 
 GameState::GameState(){
-    this->ishost = ishost;
     
     mFrameNumber = 0;
     

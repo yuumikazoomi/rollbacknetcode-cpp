@@ -6,9 +6,6 @@ Game::Game(bool host) : level(&mCurrentState){
     
     memset(&mLastSyncInfo,0,sizeof(LastSyncInfo));
     
-    memset(&mCurrentState,0,sizeof(LastSyncInfo));
-    
-    
     if(host){
         mCurrentState.generaterandomseed();
         //make a binding socket

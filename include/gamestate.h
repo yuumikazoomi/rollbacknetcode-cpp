@@ -30,10 +30,6 @@ private:
     Vector2 objective;
     uint32_t randomseed;
     
-    
-    
-    bool ishost;
-    
     uint32_t rbound;
     uint32_t bbound;
     int timestep;
@@ -51,8 +47,6 @@ public:
     void entityupdate(Entity* e);
 
     uint32_t xorshift32(uint32_t *state);
-    
-    bool gethost();
     
     uint16_t getframenumber();
 
