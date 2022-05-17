@@ -11,6 +11,7 @@ enum InGamePacketId
     kProvidedInput,
     kProvidedNoInput
 };
+
 #define TEXTUREWIDTH 32
 #define TEXTUREHEIGHT 32
 class GameState{

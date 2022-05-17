@@ -147,8 +147,8 @@ void Game::update(){
          *        input             frame
          * | - - - - - - - - | - - - - - - - - |
          */
-        //get the peer's input we took earlier from network callback and
-        //grab input and frame 
+        //get the peer's packet we took earlier from network callback and
+        //grab input and frame
         uint16_t apponentframe = getlowtwo(peerinput.extra);
         uint16_t apponentinput = gethightwo(peerinput.extra);
         //update gamestate with both our input and peer's input

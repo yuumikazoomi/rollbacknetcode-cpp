@@ -23,7 +23,6 @@ typedef int     NISockAddrSize;
 #include <sys/select.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <errno.h>
 typedef int         NISocket;
