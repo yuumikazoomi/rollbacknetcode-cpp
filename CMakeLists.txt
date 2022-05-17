@@ -6,7 +6,7 @@ if(WIN32)
 else()
 	add_executable(rollback main.cpp entity.cpp gamestate.cpp netinterface.cpp game.cpp stage.cpp)
 endif()
- 
+
 target_include_directories(rollback PUBLIC "include")
 
 add_subdirectory(SDL)
@@ -14,10 +14,6 @@ add_subdirectory(SDL)
 target_include_directories(rollback PUBLIC SDL/include)
 
 target_link_libraries(rollback SDL2)
-
-add_subdirectory(plog)
-
-target_include_directories(rollback PUBLIC plog/include)
 
 target_compile_features(rollback PRIVATE cxx_std_17)
 

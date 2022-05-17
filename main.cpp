@@ -24,13 +24,8 @@ int main(int argc, char* argv[])
         host = false;
     }
 #endif
-    plog::init(plog::debug, "logging.txt");
-    
-    PLOGD << "Begin Logging";
     
     g = new Game(host);
-    
-    PLOGD << "game object created as host==" << host ;
     
     SDL_Init(SDL_INIT_VIDEO);
     
