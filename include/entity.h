@@ -4,6 +4,7 @@
 #include <random>
 #include <SDL.h>
 #include <deque>
+#include <queue>
 #include <iterator>
 #include <memory>
 #include <vector>

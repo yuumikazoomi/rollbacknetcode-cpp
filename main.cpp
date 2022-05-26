@@ -2,9 +2,18 @@
 #include <game.h>
 void draw(SDL_Renderer* renderer);
 void update();
-
-
-Game* g ;
+/*
+SDL_Texture *IMG_LoadTexture(SDL_Renderer *renderer, const char *file)
+{
+    SDL_Texture *texture = NULL;
+    SDL_Surface *surface = IMG_Load(file);
+    if (surface) {
+        texture = SDL_CreateTextureFromSurface(renderer, surface);
+        SDL_FreeSurface(surface);
+    }
+    return texture;
+}
+ */
 #ifdef NETINTERFACE_USING_WINDOWS
 int __stdcall WinMain(HINSTANCE instance, HINSTANCE prev, LPSTR cmdline, int cmdshow)
 #else
@@ -25,7 +34,7 @@ int main(int argc, char* argv[])
     }
 #endif
     
-    g = new Game(host);
+    Game g(host);
     
     SDL_Init(SDL_INIT_VIDEO);
     
@@ -49,17 +58,20 @@ int main(int argc, char* argv[])
     
     while (alive){
         
-        update();
-        draw(renderer);
+        g.update();
+        g.draw(renderer);
+        
     }
+    
     SDL_DestroyWindow(window);
     SDL_Quit();
+   
     return 0;
 }
 
 void update(){
-    g->update();
+    
 }
 void draw(SDL_Renderer* renderer){
-    g->draw(renderer);
+    
 }

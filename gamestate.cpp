@@ -2,8 +2,6 @@
 
 GameState::GameState(){
     
-    mFrameNumber = 0;
-    
     randomseed = 0;
 
     rbound = 1080;
@@ -75,9 +73,6 @@ void GameState::update(uint16_t myinput,uint16_t apponentinput){
         spawnobjective();
     }
     
-    
-    //update our framenumber
-    ++mFrameNumber;
 }
 
 
@@ -101,9 +96,7 @@ void GameState::setbound(uint32_t rbound, uint32_t bbound){
     this->rbound = rbound;
     this->bbound = bbound;
 }
-uint16_t GameState::getframenumber(){
-    return mFrameNumber;
-}
+
 
 uint32_t GameState::xorshift32(uint32_t *state){
     /* Algorithm "xor" from p. 4 of Marsaglia, "Xorshift RNGs" */

@@ -2,7 +2,7 @@
 #define _game_h
 #include <stage.h>
 
-#define MAX_SYNC_DRIFT 10
+#define INPUT_RENDER_DELAY 3
 
 typedef struct SLastSyncInfo
 {
@@ -12,6 +12,12 @@ typedef struct SLastSyncInfo
     
     uint16_t mOpponentInput;
 }LastSyncInfo;
+
+typedef struct SInputForFrame{
+    uint16_t mInput;
+    uint16_t mFrame;
+}InputForFrame;
+
 
 class Game{
 private:
@@ -28,22 +34,15 @@ private:
     //once handshake and seeds are shared we set this to true
     bool connected;
     
-    //last packed arrived by the peer just so we can update it in our update function
-    NIRelayPacket peerinput;
-    
-    
-    //double ended queue for previous local inputs
-    std::deque<uint16_t> mPrevLocalInputs;
-    
-    //last synced state
-    LastSyncInfo mLastSyncInfo;
-    
-    
     GameState mCurrentState;
-
-    std::set<NIRelayPacket> packetlist;
+    
+    std::deque<InputForFrame> mMyInputQue;
+    std::deque<InputForFrame> mApponentInputQue;
     
     
+    uint16_t mFrameNumber;
+    
+    uint16_t mLastFrameFromApponent;
 public:
         
     
@@ -54,7 +53,6 @@ public:
     
 private:
     void handlepacket(const NIRelayPacket& ppacket, NITransferSize size);
-    
-    void rollback(uint16_t direction, uint16_t targetframe);
+
 };
 #endif

@@ -2,7 +2,7 @@
 
 Entity::Entity(){
     score = 0;
-    speed = 7;
+    speed = 2;
     memset(&position,0,sizeof(Vector2));
 }
 uint32_t Entity::getscore(){

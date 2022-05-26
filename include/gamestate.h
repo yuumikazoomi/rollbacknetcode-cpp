@@ -19,11 +19,9 @@ enum InGamePacketId
     kProvidedNoInput
 };
 
-
 class GameState{
 
 private:
-    uint16_t mFrameNumber;
     
     Entity me;
     Entity apponent;
@@ -33,6 +31,7 @@ private:
     uint32_t rbound;
     uint32_t bbound;
     int timestep;
+
 public:
     GameState();
     void update(uint16_t myinput,uint16_t apponentinput);
