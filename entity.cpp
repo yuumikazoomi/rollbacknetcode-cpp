@@ -2,8 +2,9 @@
 
 Entity::Entity(){
     score = 0;
-    speed = 7;
+    speed = 2;
     memset(&position,0,sizeof(Vector2));
+    mPrevInput = 0;
 }
 uint32_t Entity::getscore(){
     return score;
@@ -18,7 +19,11 @@ const Vector2 &Entity::getposition(){
     return position;
 }
 void Entity::update(uint16_t input,int time){
-    
+    if(input==0){
+        input = mPrevInput;
+    }else{
+        mPrevInput = input;
+    }
     switch (input){
         case kInputRight:
             position.x += speed * time;
@@ -35,6 +40,7 @@ void Entity::update(uint16_t input,int time){
         default:
             break;
     }
+    
      
 }
 void Entity::forcesetposition(const Vector2& position){

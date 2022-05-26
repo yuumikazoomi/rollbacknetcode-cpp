@@ -12,7 +12,7 @@ GameState::GameState(){
     objective.x = 0;
     objective.y = 0;
 
-    timestep = 16; //fixed timestep
+    timestep = 1; //fixed timestep
 }
 
 

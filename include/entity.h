@@ -25,6 +25,7 @@ private:
     uint32_t score;
     Vector2 position ;
     int speed;
+    uint16_t mPrevInput;
 public:
     Entity();
     uint32_t getscore();
