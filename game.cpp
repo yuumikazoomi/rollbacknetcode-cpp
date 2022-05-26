@@ -18,7 +18,7 @@ Game::Game(bool host) : level(&mCurrentState){
         if(net.makesocket()){
             //send handshake
             //in return we'll receive a random seed
-            net.setremoteaddress("127.0.0.1",6789);
+            net.setremoteaddress("127.0.0.1",1111);
             
             NIRelayPacket packet = {0};
             packet.signature = NI_SIGNATURE;
@@ -49,6 +49,7 @@ Game::Game(bool host) : level(&mCurrentState){
     mLastFrameFromApponent = 0;
 }
 void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
+    //printf("incoming packet\n");
     switch (packet.packettype) {
         case kNIHandShake:{
             //send them our seed
@@ -96,7 +97,7 @@ void Game::handlepacket(const NIRelayPacket& packet, NITransferSize size){
             
             //check if we need to suspend processing in case we're getting too far ahead
             if(mFrameNumber - apponentInput.mFrame > INPUT_RENDER_DELAY){
-                printf("suspending until we get a recent frame\n");
+                //printf("suspending until we get a recent frame\n");
                 //suspend until we're within render delay?
                 processing = false;
             }else{
@@ -199,9 +200,9 @@ void Game::update(){
         InputForFrame inputToBeRenderedSelf = mMyInputQue.back();
         //time to render our input
         //printf("%d\n",mFrameNumber - inputToBeRenderedSelf.mFrame == INPUT_RENDER_DELAY);
-        printf("current frame:%d:frame in deque:%d\n",mFrameNumber,inputToBeRenderedSelf.mFrame);
+        //printf("current frame:%d:frame in deque:%d\n",mFrameNumber,inputToBeRenderedSelf.mFrame);
         if(mFrameNumber - inputToBeRenderedSelf.mFrame >= INPUT_RENDER_DELAY){
-            printf("ready to pop our input:%d:%d\n",mFrameNumber,inputToBeRenderedSelf.mFrame);
+            //printf("ready to pop our input:%d:%d\n",mFrameNumber,inputToBeRenderedSelf.mFrame);
             
             if(!mApponentInputQue.empty()){
                 //check if the apponent's input is ready to be rendered
@@ -210,7 +211,7 @@ void Game::update(){
                 
                 if(mFrameNumber - inputToBeRenderedApp.mFrame >= INPUT_RENDER_DELAY){
                     //ready to pop it and lock it
-                    printf("ready to pop apponent input\n");
+                    //printf("ready to pop apponent input\n");
                     mMyInputQue.pop_back();
                     
                     mApponentInputQue.pop_back();
@@ -218,10 +219,10 @@ void Game::update(){
                     mCurrentState.update(inputToBeRenderedSelf.mInput,inputToBeRenderedApp.mInput);
                     
                 }else{
-                    printf("apponent is not ready to pop\n");
+                    //printf("apponent is not ready to pop\n");
                 }
             }else{
-                printf("apponent input que is empty?\n");
+                //printf("apponent input que is empty?\n");
             }
             
             
