@@ -90,7 +90,7 @@ bool NetInterface::makesocket()
 bool NetInterface::makesocketbind(){
     NISockAddrIn selfaddress = {0};
     selfaddress.sin_family = AF_INET;
-    selfaddress.sin_port = htons(6789);
+    selfaddress.sin_port = htons(1111);
     selfaddress.sin_addr.s_addr = INADDR_ANY;
     if(!makesocket()){
         return false;

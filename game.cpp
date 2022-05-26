@@ -25,7 +25,7 @@ Game::Game(bool host) : level(&mCurrentState){
         if(net.makesocket()){
             //send handshake
             //in return we'll receive a random seed
-            net.setremoteaddress("127.0.0.1",6789);
+            net.setremoteaddress("127.0.0.1",1111);
             
             NIRelayPacket packet = {0};
             packet.signature = NI_SIGNATURE;
