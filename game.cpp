@@ -200,7 +200,7 @@ void Game::update(){
         //time to render our input
         //printf("%d\n",mFrameNumber - inputToBeRenderedSelf.mFrame == INPUT_RENDER_DELAY);
         printf("current frame:%d:frame in deque:%d\n",mFrameNumber,inputToBeRenderedSelf.mFrame);
-        if(mFrameNumber - inputToBeRenderedSelf.mFrame == INPUT_RENDER_DELAY){
+        if(mFrameNumber - inputToBeRenderedSelf.mFrame >= INPUT_RENDER_DELAY){
             printf("ready to pop our input:%d:%d\n",mFrameNumber,inputToBeRenderedSelf.mFrame);
             
             if(!mApponentInputQue.empty()){
@@ -208,7 +208,7 @@ void Game::update(){
                 
                 InputForFrame inputToBeRenderedApp = mApponentInputQue.back();
                 
-                if(mFrameNumber - inputToBeRenderedApp.mFrame == INPUT_RENDER_DELAY){
+                if(mFrameNumber - inputToBeRenderedApp.mFrame >= INPUT_RENDER_DELAY){
                     //ready to pop it and lock it
                     printf("ready to pop apponent input\n");
                     mMyInputQue.pop_back();
