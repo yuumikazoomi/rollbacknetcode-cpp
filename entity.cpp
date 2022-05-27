@@ -2,7 +2,7 @@
 
 Entity::Entity(){
     score = 0;
-    speed = 60;
+    speed = 61;
     memset(&position,0,sizeof(Vector2));
     mPrevInput = 0;
 }
