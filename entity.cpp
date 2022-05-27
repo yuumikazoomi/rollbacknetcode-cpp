@@ -2,7 +2,7 @@
 
 Entity::Entity(){
     score = 0;
-    speed = 2;
+    speed = 60;
     memset(&position,0,sizeof(Vector2));
     mPrevInput = 0;
 }
@@ -18,7 +18,7 @@ void Entity::incrementscore(){
 const Vector2 &Entity::getposition(){
     return position;
 }
-void Entity::update(uint16_t input,int time){
+void Entity::update(uint16_t input,float time){
     if(input==0){
         input = mPrevInput;
     }else{

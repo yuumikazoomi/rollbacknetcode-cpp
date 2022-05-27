@@ -32,7 +32,7 @@ public:
     void setscore(uint32_t score);
     void incrementscore();
     const Vector2& getposition();
-    void update(uint16_t input, int time);
+    void update(uint16_t input, float time);
     void forcesetposition(const Vector2& position);
 };
 #endif

@@ -32,7 +32,7 @@ private:
     
     uint32_t rbound;
     uint32_t bbound;
-    int timestep;
+    float timestep;
 public:
     GameState();
     void update(uint16_t myinput,uint16_t apponentinput);
