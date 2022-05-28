@@ -19,11 +19,29 @@ const Vector2 &Entity::getposition(){
     return position;
 }
 void Entity::update(uint16_t input,float time){
-    if(input==0){
+    
+    if(input == 0){
         input = mPrevInput;
     }else{
         mPrevInput = input;
     }
+    
+    if(position.x < 0){
+        mPrevInput = kInputRight;
+        input = mPrevInput;
+    }else if(position.x > 1000){
+        mPrevInput = kInputLeft;
+        input = mPrevInput;
+    }else if(position.y < 0){
+        mPrevInput = kInputDown;
+        input = mPrevInput;
+    }else if(position.y > 1000){
+        mPrevInput = kInputUp;
+        input = mPrevInput;
+    }
+    
+    
+    
     switch (input){
         case kInputRight:
             position.x += speed * time;
@@ -40,6 +58,7 @@ void Entity::update(uint16_t input,float time){
         default:
             break;
     }
+    
     
      
 }
