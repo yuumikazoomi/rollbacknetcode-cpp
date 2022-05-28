@@ -24,6 +24,20 @@ void Entity::update(uint16_t input,int time){
     }else{
         mInputPrevious = input;
     }
+    if(position.x < 0){
+        mInputPrevious = kInputRight;
+        input = mInputPrevious;
+    }else if(position.x > 1000){
+        mInputPrevious = kInputLeft;
+        input = mInputPrevious;
+    }else if(position.y < 0){
+        mInputPrevious = kInputDown;
+        input = mInputPrevious;
+    }else if(position.y > 1000){
+        mInputPrevious = kInputUp;
+        input = mInputPrevious;
+    }
+    
     switch (input){
         case kInputRight:
             position.x += speed * time;
